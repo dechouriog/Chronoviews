@@ -5,35 +5,46 @@ import { RouterLink, RouterView } from 'vue-router';
 <template>
   <div class="bg-gray-100 min-h-screen">
     <div class="flex h-screen overflow-hidden">
+
       <!-- sidebar -->
       <aside class="w-64 bg-gray-800 text-white shadow-lg fixed h-full flex flex-col">
         <div class="p-6 flex-1">
           <div class="flex items-center mb-8">
-            <i class="fas fa-graduation-cap text-2xl mr-3 text-blue-400"></i>
-            <span class="font-bold text-xl">Library Dashboard</span>
+            <i class="fas fa-clock text-2xl mr-3 text-blue-400"></i>
+            <span class="font-bold text-xl">Time Tracker</span>
           </div>
 
           <nav class="space-y-2">
             <RouterLink
-              to="/"
+              to="/tasks"
               class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200"
             >
-              <i class="fas fa-home mr-3"></i>
-              <span>Home</span>
+              <i class="fas fa-tasks mr-3"></i>
+              <span>Tasks</span>
             </RouterLink>
+
             <RouterLink
-              to="/about"
+              to="/statistics"
               class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200"
             >
-              <i class="fas fa-info-circle mr-3"></i>
-              <span>About</span>
+              <i class="fas fa-chart-bar mr-3"></i>
+              <span>Statistics</span>
             </RouterLink>
+
             <RouterLink
-              to="/books"
+              to="/settings"
               class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200"
             >
-              <i class="fas fa-book mr-3"></i>
-              <span>Books</span>
+              <i class="fas fa-cog mr-3"></i>
+              <span>Settings</span>
+            </RouterLink>
+
+            <RouterLink
+              to="/admin"
+              class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-700 transition duration-200"
+            >
+              <i class="fas fa-shield-alt mr-3"></i>
+              <span>Admin</span>
             </RouterLink>
           </nav>
         </div>
@@ -53,6 +64,7 @@ import { RouterLink, RouterView } from 'vue-router';
 
       <!-- main content area -->
       <div class="flex-1 flex flex-col overflow-hidden ml-64">
+
         <!-- top header -->
         <header class="bg-white shadow-sm border-b border-gray-200">
           <div class="px-6 py-4 flex items-center justify-between">
@@ -62,14 +74,10 @@ import { RouterLink, RouterView } from 'vue-router';
               </h1>
             </div>
             <div class="flex items-center space-x-4">
-              <button
-                class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition duration-200"
-              >
+              <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition duration-200">
                 <i class="fas fa-search"></i>
               </button>
-              <div
-                class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition duration-200"
-              >
+              <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition duration-200">
                 <i class="fas fa-user text-white"></i>
               </div>
             </div>
@@ -81,6 +89,7 @@ import { RouterLink, RouterView } from 'vue-router';
           <RouterView />
         </main>
       </div>
+
     </div>
   </div>
 </template>
