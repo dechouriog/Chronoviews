@@ -1,20 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '@/views/HomeView.vue';
-import AboutView from '@/views/AboutView.vue';
-import CounterView from '@/views/CounterView.vue';
-import BooksIndexView from '@/views/BooksIndexView.vue';
-import BooksShowView from '@/views/BooksShowView.vue';
-import BooksCreateView from '@/views/BooksCreateView.vue';
+
+import TasksView from '@/views/TasksView.vue';
+import StatisticsView from '@/views/StatisticsView.vue';
+import SettingsView from '@/views/SettingsView.vue';
+import AdminView from '@/views/AdminView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/', name: 'home', component: HomeView, meta: { title: 'Home' } },
-    { path: '/about', name: 'about', component: AboutView, meta: { title: 'About' } },
-    { path: '/counter', name: 'counter', component: CounterView, meta: { title: 'Counter' } },
-    { path: '/books', name: 'books', component: BooksIndexView, meta: { title: 'Books' } },
-    { path: '/books/create', name: 'books.create', component: BooksCreateView, meta: { title: 'Create Book' } },
-    { path: '/books/:id', name: 'book', component: BooksShowView, meta: { title: 'Book' } },
+    { path: '/', redirect: '/tasks' },
+    { path: '/tasks', name: 'tasks', component: TasksView, meta: { title: 'Time Tracker' } },
+    { path: '/statistics', name: 'statistics', component: StatisticsView, meta: { title: 'Statistics' } },
+    { path: '/settings', name: 'settings', component: SettingsView, meta: { title: 'Settings' } },
+    { path: '/admin', name: 'admin', component: AdminView, meta: { title: 'Admin' } },
   ],
 });
 
