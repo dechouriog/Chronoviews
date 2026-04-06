@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { TaskService } from '@/services/TaskService';
 
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 
 import StatCard from '@/components/StatCard.vue';
+import TaskBreakdown from '@/components/TaskBreakdown.vue';
 
 const activeTab = ref<'distribution' | 'weekly'>('distribution');
 
@@ -29,21 +30,6 @@ function formatHours(milliseconds: number): string {
   return `${(milliseconds / 3600000).toFixed(1)}h`;
 }
 
-function formatHoursMinutes(milliseconds: number): string {
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  return `${hours}h ${String(minutes).padStart(2, '0')}m`;
-}
-
-function getPercentage(taskTime: number): number {
-  if (totalWeekTime.value === 0) return 0;
-  return Math.round((taskTime / totalWeekTime.value) * 100);
-}
-
-const DONUT_RADIUS = 80;
-const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
-
 interface DonutSlice {
   taskId: string;
   name: string;
@@ -52,12 +38,16 @@ interface DonutSlice {
   offset: number;
 }
 
+const DONUT_RADIUS = 80;
+const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
+
 const donutSlices = computed<DonutSlice[]>(() => {
+  const total = totalWeekTime.value;
   let accumulated = 0;
   return tasks.value
     .filter((task: TaskInterface) => task.totalTime > 0)
     .map((task: TaskInterface) => {
-      const percentage = getPercentage(task.totalTime);
+      const percentage = total > 0 ? Math.round((task.totalTime / total) * 100) : 0;
       const offset = DONUT_CIRCUMFERENCE - (accumulated / 100) * DONUT_CIRCUMFERENCE;
       accumulated += percentage;
       return { taskId: task.id, name: task.name, color: task.color, percentage, offset };
@@ -123,14 +113,18 @@ const maxWeeklyTime = computed<number>(() => Math.max(...weeklyData.value));
       <button
         @click="activeTab = 'distribution'"
         class="px-5 py-2 rounded-lg font-medium text-sm transition duration-200"
-        :class="activeTab === 'distribution' ? 'bg-white text-black' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'"
+        :class="activeTab === 'distribution'
+          ? 'bg-white text-black'
+          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'"
       >
         Time Distribution
       </button>
       <button
         @click="activeTab = 'weekly'"
         class="px-5 py-2 rounded-lg font-medium text-sm transition duration-200"
-        :class="activeTab === 'weekly' ? 'bg-white text-black' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'"
+        :class="activeTab === 'weekly'
+          ? 'bg-white text-black'
+          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'"
       >
         Weekly Overview
       </button>
@@ -138,6 +132,8 @@ const maxWeeklyTime = computed<number>(() => Math.max(...weeklyData.value));
 
     <!-- time distribution tab -->
     <div v-if="activeTab === 'distribution'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- donut chart (será reemplazado por Chart.js en commit 4) -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">Time by Task</h3>
         <div class="flex justify-center">
@@ -159,38 +155,17 @@ const maxWeeklyTime = computed<number>(() => Math.max(...weeklyData.value));
         </div>
       </div>
 
+      <!-- task breakdown -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">Task Breakdown</h3>
-        <div class="space-y-5">
-          <div
-            v-for="task in tasks.filter((t: TaskInterface) => t.totalTime > 0)"
-            :key="task.id"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full" :style="{ backgroundColor: task.color }"></span>
-                <span class="text-white text-sm font-medium">{{ task.name }}</span>
-              </div>
-              <div class="text-right">
-                <span class="text-white text-sm font-semibold">{{ formatHoursMinutes(task.totalTime) }}</span>
-                <span class="text-gray-500 text-xs ml-2">({{ getPercentage(task.totalTime) }}%)</span>
-              </div>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-1.5">
-              <div
-                class="h-1.5 rounded-full transition-all duration-500"
-                :style="{ width: `${getPercentage(task.totalTime)}%`, backgroundColor: task.color }"
-              ></div>
-            </div>
-          </div>
-          <div v-if="tasks.length === 0" class="text-center py-8 text-gray-500">
-            <p>No data available</p>
-          </div>
-        </div>
+        <TaskBreakdown
+          :tasks="tasks"
+          :total-time="totalWeekTime"
+        />
       </div>
     </div>
 
-    <!-- weekly overview tab -->
+    <!-- weekly overview tab (será reemplazado por ECharts en commit 5) -->
     <div v-if="activeTab === 'weekly'" class="bg-gray-900 rounded-xl p-6 border border-gray-800">
       <h3 class="text-lg font-semibold text-white mb-6">Weekly Overview</h3>
       <div class="flex items-end justify-around gap-3 h-48">
