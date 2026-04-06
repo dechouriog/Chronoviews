@@ -7,6 +7,7 @@ import { UserService } from '@/services/UserService';
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 
 import StatCard from '@/components/StatCard.vue';
+import DonutChart from '@/components/DonutChart.vue';
 
 const tasks = computed<TaskInterface[]>(() => TaskService.getTasks());
 const user = computed(() => UserService.getUser());
@@ -63,24 +64,17 @@ function formatHours(milliseconds: number): string {
   return `${(milliseconds / 3600000).toFixed(1)}h`;
 }
 
-const DONUT_RADIUS = 80;
-const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
+const donutLabels = computed<string[]>(() =>
+  categoryStats.value.map((cat: CategoryStat) => cat.name),
+);
 
-interface DonutSlice {
-  name: string;
-  color: string;
-  percentage: number;
-  offset: number;
-}
+const donutData = computed<number[]>(() =>
+  categoryStats.value.map((cat: CategoryStat) => cat.totalTime),
+);
 
-const donutSlices = computed<DonutSlice[]>(() => {
-  let accumulated = 0;
-  return categoryStats.value.map((cat: CategoryStat) => {
-    const offset = DONUT_CIRCUMFERENCE - (accumulated / 100) * DONUT_CIRCUMFERENCE;
-    accumulated += cat.percentage;
-    return { name: cat.name, color: cat.color, percentage: cat.percentage, offset };
-  });
-});
+const donutColors = computed<string[]>(() =>
+  categoryStats.value.map((cat: CategoryStat) => cat.color),
+);
 </script>
 
 <template>
@@ -127,35 +121,19 @@ const donutSlices = computed<DonutSlice[]>(() => {
     <!-- charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <!-- donut chart -->
+      <!-- donut chart con Chart.js -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <h3 class="text-lg font-semibold text-white mb-6">Global Time Distribution by Category</h3>
-        <div class="flex justify-center mb-6">
-          <svg width="200" height="200" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="80" fill="none" stroke="#1f2937" stroke-width="32" />
-            <circle
-              v-for="(slice, index) in donutSlices"
-              :key="index"
-              cx="100" cy="100" r="80"
-              fill="none"
-              :stroke="slice.color"
-              stroke-width="32"
-              :stroke-dasharray="`${(slice.percentage / 100) * DONUT_CIRCUMFERENCE} ${DONUT_CIRCUMFERENCE}`"
-              :stroke-dashoffset="slice.offset"
-              transform="rotate(-90 100 100)"
-              stroke-linecap="butt"
-            />
-          </svg>
-        </div>
-        <div class="flex flex-wrap justify-center gap-4">
-          <div v-for="cat in categoryStats" :key="cat.name" class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full" :style="{ backgroundColor: cat.color }"></span>
-            <span class="text-gray-300 text-sm">{{ cat.name }} {{ cat.percentage }}%</span>
-          </div>
-        </div>
+        <h3 class="text-lg font-semibold text-white mb-6">
+          Global Time Distribution by Category
+        </h3>
+        <DonutChart
+          :labels="donutLabels"
+          :data="donutData"
+          :colors="donutColors"
+        />
       </div>
 
-      <!-- bar chart horizontal -->
+      <!-- bar chart horizontal (será reemplazado por ECharts en commit 6) -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">Hours by Category</h3>
         <div class="space-y-5">

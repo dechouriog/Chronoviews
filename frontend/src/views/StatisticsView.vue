@@ -7,6 +7,7 @@ import type { TaskInterface } from '@/interfaces/TaskInterface';
 
 import StatCard from '@/components/StatCard.vue';
 import TaskBreakdown from '@/components/TaskBreakdown.vue';
+import DonutChart from '@/components/DonutChart.vue';
 
 const activeTab = ref<'distribution' | 'weekly'>('distribution');
 
@@ -30,29 +31,17 @@ function formatHours(milliseconds: number): string {
   return `${(milliseconds / 3600000).toFixed(1)}h`;
 }
 
-interface DonutSlice {
-  taskId: string;
-  name: string;
-  color: string;
-  percentage: number;
-  offset: number;
-}
+const donutLabels = computed<string[]>(() =>
+  tasks.value.filter((t: TaskInterface) => t.totalTime > 0).map((t: TaskInterface) => t.name),
+);
 
-const DONUT_RADIUS = 80;
-const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
+const donutData = computed<number[]>(() =>
+  tasks.value.filter((t: TaskInterface) => t.totalTime > 0).map((t: TaskInterface) => t.totalTime),
+);
 
-const donutSlices = computed<DonutSlice[]>(() => {
-  const total = totalWeekTime.value;
-  let accumulated = 0;
-  return tasks.value
-    .filter((task: TaskInterface) => task.totalTime > 0)
-    .map((task: TaskInterface) => {
-      const percentage = total > 0 ? Math.round((task.totalTime / total) * 100) : 0;
-      const offset = DONUT_CIRCUMFERENCE - (accumulated / 100) * DONUT_CIRCUMFERENCE;
-      accumulated += percentage;
-      return { taskId: task.id, name: task.name, color: task.color, percentage, offset };
-    });
-});
+const donutColors = computed<string[]>(() =>
+  tasks.value.filter((t: TaskInterface) => t.totalTime > 0).map((t: TaskInterface) => t.color),
+);
 
 const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -132,30 +121,15 @@ const maxWeeklyTime = computed<number>(() => Math.max(...weeklyData.value));
 
     <!-- time distribution tab -->
     <div v-if="activeTab === 'distribution'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-      <!-- donut chart (será reemplazado por Chart.js en commit 4) -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">Time by Task</h3>
-        <div class="flex justify-center">
-          <svg width="200" height="200" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="80" fill="none" stroke="#1f2937" stroke-width="32" />
-            <circle
-              v-for="(slice, index) in donutSlices"
-              :key="index"
-              cx="100" cy="100" r="80"
-              fill="none"
-              :stroke="slice.color"
-              stroke-width="32"
-              :stroke-dasharray="`${(slice.percentage / 100) * DONUT_CIRCUMFERENCE} ${DONUT_CIRCUMFERENCE}`"
-              :stroke-dashoffset="slice.offset"
-              transform="rotate(-90 100 100)"
-              stroke-linecap="butt"
-            />
-          </svg>
-        </div>
+        <DonutChart
+          :labels="donutLabels"
+          :data="donutData"
+          :colors="donutColors"
+        />
       </div>
 
-      <!-- task breakdown -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">Task Breakdown</h3>
         <TaskBreakdown
