@@ -3,15 +3,17 @@ import { computed } from 'vue';
 
 import { TaskService } from '@/services/TaskService';
 import { UserService } from '@/services/UserService';
+
 import type { TaskInterface } from '@/interfaces/TaskInterface';
+
+import StatCard from '@/components/StatCard.vue';
 
 const tasks = computed<TaskInterface[]>(() => TaskService.getTasks());
 const user = computed(() => UserService.getUser());
 
 const totalTrackedHours = computed<number>(() => {
   const totalMs = tasks.value.reduce(
-    (total: number, task: TaskInterface) => total + task.totalTime,
-    0,
+    (total: number, task: TaskInterface) => total + task.totalTime, 0,
   );
   return totalMs / 3600000;
 });
@@ -36,19 +38,15 @@ interface CategoryStat {
 
 const categoryStats = computed<CategoryStat[]>(() => {
   const categoryMap: Record<string, { totalTime: number; color: string }> = {};
-
   tasks.value.forEach((task: TaskInterface) => {
     if (!categoryMap[task.category]) {
       categoryMap[task.category] = { totalTime: 0, color: task.color };
     }
     categoryMap[task.category].totalTime += task.totalTime;
   });
-
   const totalMs = tasks.value.reduce(
-    (total: number, task: TaskInterface) => total + task.totalTime,
-    0,
+    (total: number, task: TaskInterface) => total + task.totalTime, 0,
   );
-
   return Object.entries(categoryMap).map(([name, data]) => ({
     name,
     color: data.color,
@@ -65,7 +63,6 @@ function formatHours(milliseconds: number): string {
   return `${(milliseconds / 3600000).toFixed(1)}h`;
 }
 
-// SVG donut
 const DONUT_RADIUS = 80;
 const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
 
@@ -81,12 +78,7 @@ const donutSlices = computed<DonutSlice[]>(() => {
   return categoryStats.value.map((cat: CategoryStat) => {
     const offset = DONUT_CIRCUMFERENCE - (accumulated / 100) * DONUT_CIRCUMFERENCE;
     accumulated += cat.percentage;
-    return {
-      name: cat.name,
-      color: cat.color,
-      percentage: cat.percentage,
-      offset,
-    };
+    return { name: cat.name, color: cat.color, percentage: cat.percentage, offset };
   });
 });
 </script>
@@ -102,61 +94,49 @@ const donutSlices = computed<DonutSlice[]>(() => {
 
     <!-- stat cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-gray-900 rounded-xl p-5 border border-gray-800">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-gray-400 text-sm">Total Hours Tracked</span>
-          <i class="fas fa-clock text-green-400"></i>
-        </div>
-        <p class="text-3xl font-bold text-white">{{ totalTrackedHours.toFixed(0) }}h</p>
-        <p class="text-gray-500 text-xs mt-1">All users combined</p>
-      </div>
-
-      <div class="bg-gray-900 rounded-xl p-5 border border-gray-800">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-gray-400 text-sm">Categories</span>
-          <i class="fas fa-layer-group text-blue-400"></i>
-        </div>
-        <p class="text-3xl font-bold text-white">{{ uniqueCategories.length }}</p>
-        <p class="text-gray-500 text-xs mt-1">Active categories</p>
-      </div>
-
-      <div class="bg-gray-900 rounded-xl p-5 border border-gray-800">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-gray-400 text-sm">Top Category</span>
-          <i class="fas fa-arrow-trend-up text-orange-400"></i>
-        </div>
-        <p class="text-3xl font-bold text-white">{{ topCategory }}</p>
-        <p class="text-gray-500 text-xs mt-1">Most time spent</p>
-      </div>
-
-      <div class="bg-gray-900 rounded-xl p-5 border border-gray-800">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-gray-400 text-sm">Active Users</span>
-          <i class="fas fa-users text-purple-400"></i>
-        </div>
-        <p class="text-3xl font-bold text-white">{{ user ? 1 : 0 }}</p>
-        <p class="text-gray-500 text-xs mt-1">Tracking time</p>
-      </div>
+      <StatCard
+        title="Total Hours Tracked"
+        :value="`${totalTrackedHours.toFixed(0)}h`"
+        subtitle="All users combined"
+        icon="clock"
+        icon-color="text-green-400"
+      />
+      <StatCard
+        title="Categories"
+        :value="`${uniqueCategories.length}`"
+        subtitle="Active categories"
+        icon="layer-group"
+        icon-color="text-blue-400"
+      />
+      <StatCard
+        title="Top Category"
+        :value="topCategory"
+        subtitle="Most time spent"
+        icon="arrow-trend-up"
+        icon-color="text-orange-400"
+      />
+      <StatCard
+        title="Active Users"
+        :value="user ? '1' : '0'"
+        subtitle="Tracking time"
+        icon="users"
+        icon-color="text-purple-400"
+      />
     </div>
 
     <!-- charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <!-- donut chart por categoría -->
+      <!-- donut chart -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <h3 class="text-lg font-semibold text-white mb-6">
-          Global Time Distribution by Category
-        </h3>
-
+        <h3 class="text-lg font-semibold text-white mb-6">Global Time Distribution by Category</h3>
         <div class="flex justify-center mb-6">
           <svg width="200" height="200" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="80" fill="none" stroke="#1f2937" stroke-width="32" />
             <circle
               v-for="(slice, index) in donutSlices"
               :key="index"
-              cx="100"
-              cy="100"
-              r="80"
+              cx="100" cy="100" r="80"
               fill="none"
               :stroke="slice.color"
               stroke-width="32"
@@ -167,36 +147,22 @@ const donutSlices = computed<DonutSlice[]>(() => {
             />
           </svg>
         </div>
-
         <div class="flex flex-wrap justify-center gap-4">
-          <div
-            v-for="cat in categoryStats"
-            :key="cat.name"
-            class="flex items-center gap-2"
-          >
-            <span
-              class="w-3 h-3 rounded-full"
-              :style="{ backgroundColor: cat.color }"
-            ></span>
+          <div v-for="cat in categoryStats" :key="cat.name" class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full" :style="{ backgroundColor: cat.color }"></span>
             <span class="text-gray-300 text-sm">{{ cat.name }} {{ cat.percentage }}%</span>
           </div>
         </div>
       </div>
 
-      <!-- bar chart horizontal por categoría -->
+      <!-- bar chart horizontal -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">Hours by Category</h3>
-
         <div class="space-y-5">
-          <div
-            v-for="cat in categoryStats"
-            :key="cat.name"
-          >
+          <div v-for="cat in categoryStats" :key="cat.name">
             <div class="flex items-center justify-between mb-2">
               <span class="text-gray-400 text-sm w-28 truncate">{{ cat.name }}</span>
-              <span class="text-gray-300 text-sm font-medium">
-                {{ formatHours(cat.totalTime) }}
-              </span>
+              <span class="text-gray-300 text-sm font-medium">{{ formatHours(cat.totalTime) }}</span>
             </div>
             <div class="w-full bg-gray-700 rounded-full h-4">
               <div
@@ -208,7 +174,6 @@ const donutSlices = computed<DonutSlice[]>(() => {
               ></div>
             </div>
           </div>
-
           <div v-if="categoryStats.length === 0" class="text-center py-8 text-gray-500">
             <p>No data available</p>
           </div>
