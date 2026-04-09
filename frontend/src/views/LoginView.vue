@@ -115,6 +115,17 @@ function handleLogin(): void {
           </div>
         </div>
 
+        <!-- link to register -->
+        <p class="text-center text-gray-500 text-sm mt-6">
+          Don't have an account?
+          <RouterLink
+            to="/register"
+            class="text-green-400 hover:text-green-300 font-medium transition duration-200"
+          >
+            Create one
+          </RouterLink>
+        </p>
+
       </div>
 
       <!-- footer -->
