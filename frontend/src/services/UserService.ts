@@ -1,5 +1,5 @@
 import { useUserStore } from '@/stores/userstore';
-import { authSeeder } from '@/stores/authseeder';
+import { AuthService } from '@/services/AuthService';
 
 import type { UserInterface } from '@/interfaces/UserInterface';
 import type { CreateUserDTO } from '@/dtos/CreateUserDTO';
@@ -10,7 +10,7 @@ export class UserService {
   }
 
   static getAllUsers(): UserInterface[] {
-    return authSeeder;
+    return AuthService.getAllUsers();
   }
 
   static setUser(user: CreateUserDTO): void {
