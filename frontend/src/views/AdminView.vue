@@ -5,12 +5,14 @@ import { TaskService } from '@/services/TaskService';
 import { UserService } from '@/services/UserService';
 
 import type { TaskInterface } from '@/interfaces/TaskInterface';
+import type { UserInterface } from '@/interfaces/UserInterface';
 
 import StatCard from '@/components/StatCard.vue';
 import DonutChart from '@/components/DonutChart.vue';
 
 const tasks = computed<TaskInterface[]>(() => TaskService.getTasks());
-const user = computed(() => UserService.getUser());
+const users = computed<UserInterface[]>(() => UserService.getAllUsers());
+const activeUser = computed<UserInterface | null>(() => UserService.getUser());
 
 const totalTrackedHours = computed<number>(() => {
   const totalMs = tasks.value.reduce(
@@ -75,6 +77,24 @@ const donutData = computed<number[]>(() =>
 const donutColors = computed<string[]>(() =>
   categoryStats.value.map((cat: CategoryStat) => cat.color),
 );
+
+function getRoleBadgeClass(role: string): string {
+  return role === 'admin'
+    ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+    : 'bg-green-500/20 text-green-400 border border-green-500/30';
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((word: string) => word.charAt(0).toUpperCase())
+    .slice(0, 2)
+    .join('');
+}
+
+function isCurrentUser(user: UserInterface): boolean {
+  return activeUser.value?.id === user.id;
+}
 </script>
 
 <template>
@@ -110,18 +130,18 @@ const donutColors = computed<string[]>(() =>
         icon-color="text-orange-400"
       />
       <StatCard
-        title="Active Users"
-        :value="user ? '1' : '0'"
-        subtitle="Tracking time"
+        title="Registered Users"
+        :value="`${users.length}`"
+        subtitle="Total accounts"
         icon="users"
         icon-color="text-purple-400"
       />
     </div>
 
     <!-- charts -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 
-      <!-- donut chart con Chart.js -->
+      <!-- donut chart -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">
           Global Time Distribution by Category
@@ -140,7 +160,9 @@ const donutColors = computed<string[]>(() =>
           <div v-for="cat in categoryStats" :key="cat.name">
             <div class="flex items-center justify-between mb-2">
               <span class="text-gray-400 text-sm w-28 truncate">{{ cat.name }}</span>
-              <span class="text-gray-300 text-sm font-medium">{{ formatHours(cat.totalTime) }}</span>
+              <span class="text-gray-300 text-sm font-medium">
+                {{ formatHours(cat.totalTime) }}
+              </span>
             </div>
             <div class="w-full bg-gray-700 rounded-full h-4">
               <div
@@ -156,6 +178,112 @@ const donutColors = computed<string[]>(() =>
             <p>No data available</p>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- users table -->
+    <div class="bg-gray-900 rounded-xl border border-gray-800">
+      <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-semibold text-white">User Management</h3>
+          <p class="text-gray-500 text-sm mt-0.5">All registered accounts</p>
+        </div>
+        <span class="bg-gray-800 text-gray-400 text-xs px-3 py-1 rounded-full border border-gray-700">
+          {{ users.length }} users
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-800">
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
+                User
+              </th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
+                Email
+              </th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
+                Role
+              </th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
+                Total Tracked
+              </th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
+                Tasks
+              </th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800">
+            <tr
+              v-for="user in users"
+              :key="user.id"
+              class="hover:bg-gray-800/50 transition duration-150"
+            >
+              <!-- user -->
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                    :class="user.role === 'admin' ? 'bg-purple-500 text-white' : 'bg-green-500 text-black'"
+                  >
+                    {{ getInitials(user.name) }}
+                  </div>
+                  <div>
+                    <p class="text-white text-sm font-medium">{{ user.name }}</p>
+                    <p class="text-gray-500 text-xs">ID: {{ user.id }}</p>
+                  </div>
+                </div>
+              </td>
+
+              <!-- email -->
+              <td class="px-6 py-4">
+                <span class="text-gray-300 text-sm">{{ user.email }}</span>
+              </td>
+
+              <!-- role -->
+              <td class="px-6 py-4">
+                <span
+                  class="text-xs font-medium px-2.5 py-1 rounded-full"
+                  :class="getRoleBadgeClass(user.role)"
+                >
+                  {{ user.role }}
+                </span>
+              </td>
+
+              <!-- total tracked -->
+              <td class="px-6 py-4">
+                <span class="text-gray-300 text-sm">
+                  {{ formatHours(user.totalTrackedTime) }}
+                </span>
+              </td>
+
+              <!-- tasks count -->
+              <td class="px-6 py-4">
+                <span class="text-gray-300 text-sm">{{ user.tasksCount }}</span>
+              </td>
+
+              <!-- status -->
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="w-2 h-2 rounded-full"
+                    :class="isCurrentUser(user) ? 'bg-green-400' : 'bg-gray-600'"
+                  ></span>
+                  <span
+                    class="text-xs"
+                    :class="isCurrentUser(user) ? 'text-green-400' : 'text-gray-500'"
+                  >
+                    {{ isCurrentUser(user) ? 'Online' : 'Offline' }}
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 

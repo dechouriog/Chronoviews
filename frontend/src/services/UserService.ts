@@ -1,10 +1,16 @@
 import { useUserStore } from '@/stores/userstore';
+import { authSeeder } from '@/stores/authseeder';
+
 import type { UserInterface } from '@/interfaces/UserInterface';
 import type { CreateUserDTO } from '@/dtos/CreateUserDTO';
 
 export class UserService {
-  static getUser(): UserInterface | undefined {
-    return useUserStore().user ?? undefined;
+  static getUser(): UserInterface | null {
+    return useUserStore().user;
+  }
+
+  static getAllUsers(): UserInterface[] {
+    return authSeeder;
   }
 
   static setUser(user: CreateUserDTO): void {
