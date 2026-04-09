@@ -9,6 +9,7 @@ import type { UserInterface } from '@/interfaces/UserInterface';
 
 import StatCard from '@/components/StatCard.vue';
 import DonutChart from '@/components/DonutChart.vue';
+import CategoryBarChart from '@/components/CategoryBarChart.vue';
 
 const tasks = computed<TaskInterface[]>(() => TaskService.getTasks());
 const users = computed<UserInterface[]>(() => UserService.getAllUsers());
@@ -58,14 +59,6 @@ const categoryStats = computed<CategoryStat[]>(() => {
   }));
 });
 
-const maxCategoryTime = computed<number>(() => {
-  return Math.max(...categoryStats.value.map((cat: CategoryStat) => cat.totalTime), 1);
-});
-
-function formatHours(milliseconds: number): string {
-  return `${(milliseconds / 3600000).toFixed(1)}h`;
-}
-
 const donutLabels = computed<string[]>(() =>
   categoryStats.value.map((cat: CategoryStat) => cat.name),
 );
@@ -76,6 +69,14 @@ const donutData = computed<number[]>(() =>
 
 const donutColors = computed<string[]>(() =>
   categoryStats.value.map((cat: CategoryStat) => cat.color),
+);
+
+const barChartData = computed(() =>
+  categoryStats.value.map((cat: CategoryStat) => ({
+    name: cat.name,
+    value: cat.totalTime,
+    color: cat.color,
+  })),
 );
 
 function getRoleBadgeClass(role: string): string {
@@ -94,6 +95,10 @@ function getInitials(name: string): string {
 
 function isCurrentUser(user: UserInterface): boolean {
   return activeUser.value?.id === user.id;
+}
+
+function formatHours(milliseconds: number): string {
+  return `${(milliseconds / 3600000).toFixed(1)}h`;
 }
 </script>
 
@@ -140,8 +145,6 @@ function isCurrentUser(user: UserInterface): boolean {
 
     <!-- charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-      <!-- donut chart -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">
           Global Time Distribution by Category
@@ -153,31 +156,10 @@ function isCurrentUser(user: UserInterface): boolean {
         />
       </div>
 
-      <!-- bar chart horizontal (será reemplazado por ECharts en commit 6) -->
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <h3 class="text-lg font-semibold text-white mb-6">Hours by Category</h3>
-        <div class="space-y-5">
-          <div v-for="cat in categoryStats" :key="cat.name">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-gray-400 text-sm w-28 truncate">{{ cat.name }}</span>
-              <span class="text-gray-300 text-sm font-medium">
-                {{ formatHours(cat.totalTime) }}
-              </span>
-            </div>
-            <div class="w-full bg-gray-700 rounded-full h-4">
-              <div
-                class="h-4 rounded-full transition-all duration-500"
-                :style="{
-                  width: `${(cat.totalTime / maxCategoryTime) * 100}%`,
-                  backgroundColor: cat.color,
-                }"
-              ></div>
-            </div>
-          </div>
-          <div v-if="categoryStats.length === 0" class="text-center py-8 text-gray-500">
-            <p>No data available</p>
-          </div>
-        </div>
+        <h3 class="text-lg font-semibold text-white mb-2">Hours by Category</h3>
+        <p class="text-gray-500 text-sm mb-4">Sorted by time spent</p>
+        <CategoryBarChart :categories="barChartData" />
       </div>
     </div>
 
@@ -197,24 +179,12 @@ function isCurrentUser(user: UserInterface): boolean {
         <table class="w-full">
           <thead>
             <tr class="border-b border-gray-800">
-              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
-                User
-              </th>
-              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
-                Email
-              </th>
-              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
-                Role
-              </th>
-              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
-                Total Tracked
-              </th>
-              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
-                Tasks
-              </th>
-              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">
-                Status
-              </th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">User</th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Email</th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Role</th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Total Tracked</th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Tasks</th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Status</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-800">
@@ -223,7 +193,6 @@ function isCurrentUser(user: UserInterface): boolean {
               :key="user.id"
               class="hover:bg-gray-800/50 transition duration-150"
             >
-              <!-- user -->
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
                   <div
@@ -238,13 +207,9 @@ function isCurrentUser(user: UserInterface): boolean {
                   </div>
                 </div>
               </td>
-
-              <!-- email -->
               <td class="px-6 py-4">
                 <span class="text-gray-300 text-sm">{{ user.email }}</span>
               </td>
-
-              <!-- role -->
               <td class="px-6 py-4">
                 <span
                   class="text-xs font-medium px-2.5 py-1 rounded-full"
@@ -253,20 +218,12 @@ function isCurrentUser(user: UserInterface): boolean {
                   {{ user.role }}
                 </span>
               </td>
-
-              <!-- total tracked -->
               <td class="px-6 py-4">
-                <span class="text-gray-300 text-sm">
-                  {{ formatHours(user.totalTrackedTime) }}
-                </span>
+                <span class="text-gray-300 text-sm">{{ formatHours(user.totalTrackedTime) }}</span>
               </td>
-
-              <!-- tasks count -->
               <td class="px-6 py-4">
                 <span class="text-gray-300 text-sm">{{ user.tasksCount }}</span>
               </td>
-
-              <!-- status -->
               <td class="px-6 py-4">
                 <div class="flex items-center gap-2">
                   <span

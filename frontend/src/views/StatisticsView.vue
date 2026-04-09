@@ -8,6 +8,7 @@ import type { TaskInterface } from '@/interfaces/TaskInterface';
 import StatCard from '@/components/StatCard.vue';
 import TaskBreakdown from '@/components/TaskBreakdown.vue';
 import DonutChart from '@/components/DonutChart.vue';
+import WeeklyBarChart from '@/components/WeeklyBarChart.vue';
 
 const activeTab = ref<'distribution' | 'weekly'>('distribution');
 
@@ -45,15 +46,13 @@ const donutColors = computed<string[]>(() =>
 
 const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-const weeklyData = computed<number[]>(() => {
+const weeklyValues = computed<number[]>(() => {
   const base = totalWeekTime.value / 7;
   return weekDays.map((_: string, index: number) => {
     const variation = 0.5 + (((index * 37 + 13) % 100) / 100);
     return base * variation;
   });
 });
-
-const maxWeeklyTime = computed<number>(() => Math.max(...weeklyData.value));
 </script>
 
 <template>
@@ -139,26 +138,14 @@ const maxWeeklyTime = computed<number>(() => Math.max(...weeklyData.value));
       </div>
     </div>
 
-    <!-- weekly overview tab (será reemplazado por ECharts en commit 5) -->
+    <!-- weekly overview tab -->
     <div v-if="activeTab === 'weekly'" class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-      <h3 class="text-lg font-semibold text-white mb-6">Weekly Overview</h3>
-      <div class="flex items-end justify-around gap-3 h-48">
-        <div
-          v-for="(dayTime, index) in weeklyData"
-          :key="weekDays[index]"
-          class="flex flex-col items-center gap-2 flex-1"
-        >
-          <span class="text-gray-400 text-xs">{{ formatHours(dayTime) }}</span>
-          <div
-            class="w-full bg-gray-700 rounded-t-md transition-all duration-500"
-            :style="{
-              height: maxWeeklyTime > 0 ? `${(dayTime / maxWeeklyTime) * 140}px` : '4px',
-              backgroundColor: '#10B981',
-            }"
-          ></div>
-          <span class="text-gray-400 text-xs">{{ weekDays[index] }}</span>
-        </div>
-      </div>
+      <h3 class="text-lg font-semibold text-white mb-2">Weekly Overview</h3>
+      <p class="text-gray-500 text-sm mb-4">Time tracked per day this week</p>
+      <WeeklyBarChart
+        :days="weekDays"
+        :values="weeklyValues"
+      />
     </div>
 
   </section>

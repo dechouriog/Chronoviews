@@ -1,5 +1,6 @@
 export interface TaskInterface {
   id: string;
+  userId: string;
   name: string;
   color: string;
   category: string;
@@ -7,4 +8,3 @@ export interface TaskInterface {
   isRunning: boolean;
   lastStarted: number;
 }
- 
