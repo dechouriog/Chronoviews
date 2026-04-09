@@ -15,18 +15,11 @@ export default class PiniaConfig {
       pinia.state.value = JSON.parse(savedState);
     } else {
       pinia.state.value = {
-        task: {
-          tasks: taskSeeder,
-        },
-        timeEntry: {
-          timeEntries: timeEntrySeeder,
-        },
-        goal: {
-          goals: goalSeeder,
-        },
-        user: {
-          user: userSeeder,
-        },
+        task: { tasks: taskSeeder },
+        timeEntry: { timeEntries: timeEntrySeeder },
+        goal: { goals: goalSeeder },
+        user: { user: userSeeder },
+        auth: { registeredUsers: [] },
       };
 
       localStorage.setItem('piniaState', JSON.stringify(pinia.state.value));
