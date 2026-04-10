@@ -10,6 +10,7 @@ import TaskCard from '@/components/TaskCard.vue';
 
 const tasks = computed<TaskInterface[]>(() => TaskService.getTasks());
 const tick = ref<number>(0);
+const taskToDelete = ref<string | null>(null);
 
 let interval: ReturnType<typeof setInterval>;
 
@@ -37,6 +38,20 @@ function formatTime(milliseconds: number): string {
 
 function handleToggle(id: string): void {
   TaskService.toggleTask(id);
+}
+
+function confirmDelete(id: string): void {
+  taskToDelete.value = id;
+}
+
+function handleDelete(): void {
+  if (!taskToDelete.value) return;
+  TaskService.deleteTask(taskToDelete.value);
+  taskToDelete.value = null;
+}
+
+function cancelDelete(): void {
+  taskToDelete.value = null;
 }
 
 const totalTimeToday = computed<number>(() => {
@@ -101,16 +116,61 @@ const tasksWithTime = computed<number>(() => {
     <h3 class="text-xl font-semibold text-white mb-4">Your Tasks</h3>
 
     <div class="space-y-3">
-      <TaskCard
+      <div
         v-for="task in tasks"
         :key="task.id"
-        :task="task"
-        @toggle="handleToggle"
-      />
+        class="flex items-center gap-3"
+      >
+        <div class="flex-1">
+          <TaskCard
+            :task="task"
+            @toggle="handleToggle"
+          />
+        </div>
+        <button
+          @click="confirmDelete(task.id)"
+          class="w-10 h-10 rounded-lg bg-gray-800 hover:bg-red-500/20 border border-gray-700 hover:border-red-500/50 text-gray-500 hover:text-red-400 flex items-center justify-center transition duration-200 flex-shrink-0"
+          title="Delete task"
+        >
+          <i class="fas fa-trash text-xs"></i>
+        </button>
+      </div>
 
       <div v-if="tasks.length === 0" class="text-center py-16 text-gray-500">
         <i class="fas fa-clock text-4xl mb-4 block"></i>
         <p class="text-lg">No tasks yet. Create your first task!</p>
+      </div>
+    </div>
+
+    <!-- delete confirmation modal -->
+    <div
+      v-if="taskToDelete"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4"
+    >
+      <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 w-full max-w-sm">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+            <i class="fas fa-trash text-red-400"></i>
+          </div>
+          <div>
+            <p class="text-white font-semibold">Delete Task</p>
+            <p class="text-gray-400 text-sm">This action cannot be undone</p>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button
+            @click="cancelDelete"
+            class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium py-2.5 rounded-lg transition duration-200 text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            @click="handleDelete"
+            class="flex-1 bg-red-500 hover:bg-red-400 text-white font-semibold py-2.5 rounded-lg transition duration-200 text-sm"
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
 

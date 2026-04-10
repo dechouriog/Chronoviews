@@ -4,7 +4,6 @@ import { watch } from 'vue';
 import { taskSeeder } from '@/stores/taskseeder';
 import { timeEntrySeeder } from '@/stores/timeentryseeder';
 import { goalSeeder } from '@/stores/goalseeder';
-import { userSeeder } from '@/stores/userseeder';
 
 export default class PiniaConfig {
   public static init() {
@@ -12,13 +11,15 @@ export default class PiniaConfig {
 
     const savedState = localStorage.getItem('piniaState');
     if (savedState) {
-      pinia.state.value = JSON.parse(savedState);
+      const parsed = JSON.parse(savedState);
+      parsed.user = { user: null };
+      pinia.state.value = parsed;
     } else {
       pinia.state.value = {
         task: { tasks: taskSeeder },
         timeEntry: { timeEntries: timeEntrySeeder },
         goal: { goals: goalSeeder },
-        user: { user: userSeeder },
+        user: { user: null },
         auth: { registeredUsers: [] },
       };
 
