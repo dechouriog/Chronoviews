@@ -8,7 +8,6 @@ import StatisticsView from '@/views/StatisticsView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 import AdminView from '@/views/AdminView.vue';
 import AdminUsersView from '@/views/AdminUsersView.vue';
-import AdminTasksView from '@/views/AdminTasksView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +21,6 @@ const router = createRouter({
     { path: '/settings', name: 'settings', component: SettingsView, meta: { title: 'Settings' } },
     { path: '/admin', name: 'admin', component: AdminView, meta: { title: 'Admin' } },
     { path: '/admin/users', name: 'admin.users', component: AdminUsersView, meta: { title: 'Admin — Users' } },
-    { path: '/admin/tasks', name: 'admin.tasks', component: AdminTasksView, meta: { title: 'Admin — Tasks' } },
   ],
 });
 

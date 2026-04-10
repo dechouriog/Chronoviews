@@ -8,8 +8,8 @@ const route = useRoute();
 const router = useRouter();
 
 const isAuthLayout = computed<boolean>(() => route.meta.layout === 'auth');
-
 const authenticatedUser = computed(() => AuthService.getAuthenticatedUser());
+const isAdmin = computed<boolean>(() => authenticatedUser.value?.role === 'admin');
 
 function handleLogout(): void {
   AuthService.logout();
@@ -18,12 +18,12 @@ function handleLogout(): void {
 </script>
 
 <template>
-  <!-- auth layout: solo RouterView, sin sidebar -->
+  <!-- auth layout -->
   <div v-if="isAuthLayout">
     <RouterView />
   </div>
 
-  <!-- default layout: sidebar + header + content -->
+  <!-- default layout -->
   <div v-else class="bg-gray-950 min-h-screen">
     <div class="flex h-screen overflow-hidden">
 
@@ -63,15 +63,28 @@ function handleLogout(): void {
               <span>Settings</span>
             </RouterLink>
 
-            <RouterLink
-              v-if="authenticatedUser?.role === 'admin'"
-              to="/admin"
-              class="flex items-center px-4 py-3 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white"
-              active-class="bg-gray-800 text-green-400"
-            >
-              <i class="fas fa-shield-alt mr-3"></i>
-              <span>Admin</span>
-            </RouterLink>
+            <!-- admin section -->
+            <div v-if="isAdmin" class="pt-4">
+              <p class="text-gray-600 text-xs font-medium uppercase tracking-wider px-4 mb-2">
+                Admin
+              </p>
+              <RouterLink
+                to="/admin"
+                class="flex items-center px-4 py-3 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white"
+                active-class="bg-gray-800 text-green-400"
+              >
+                <i class="fas fa-chart-pie mr-3"></i>
+                <span>Overview</span>
+              </RouterLink>
+              <RouterLink
+                to="/admin/users"
+                class="flex items-center px-4 py-3 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white"
+                active-class="bg-gray-800 text-green-400"
+              >
+                <i class="fas fa-users mr-3"></i>
+                <span>Users</span>
+              </RouterLink>
+            </div>
           </nav>
         </div>
 
@@ -100,15 +113,11 @@ function handleLogout(): void {
         </div>
       </aside>
 
-      <!-- main content area -->
+      <!-- main content -->
       <div class="flex-1 flex flex-col overflow-hidden ml-64">
-
-        <!-- top header -->
         <header class="bg-gray-900 border-b border-gray-800">
           <div class="px-6 py-4 flex items-center justify-between">
-            <h1 class="text-xl font-bold text-white">
-              {{ route.meta.title }}
-            </h1>
+            <h1 class="text-xl font-bold text-white">{{ route.meta.title }}</h1>
             <div class="flex items-center space-x-3">
               <div class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center">
                 <span class="text-black text-sm font-bold">
@@ -120,7 +129,6 @@ function handleLogout(): void {
           </div>
         </header>
 
-        <!-- main content -->
         <main class="flex-1 overflow-y-auto">
           <RouterView />
         </main>
