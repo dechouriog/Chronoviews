@@ -40,8 +40,8 @@ const PRESET_COLORS: string[] = [
 const router = useRouter();
 
 const name = ref<string>('');
-const category = ref<string>(CATEGORIES[0]);
-const color = ref<string>(PRESET_COLORS[0]);
+const category = ref<string>(CATEGORIES[0] ?? 'Work');
+const color = ref<string>(PRESET_COLORS[0] ?? '#3B82F6');
 
 const previewName = computed<string>(() => name.value.trim() || 'Task name preview');
 
@@ -67,7 +67,6 @@ function handleSubmit(): void {
 <template>
   <section class="min-h-full bg-gray-950 text-white p-6">
 
-    <!-- header -->
     <div class="flex items-center gap-4 mb-8">
       <RouterLink
         to="/tasks"
@@ -87,7 +86,6 @@ function handleSubmit(): void {
         class="bg-gray-900 rounded-xl p-8 border border-gray-800 space-y-6"
       >
 
-        <!-- name -->
         <div>
           <label class="block text-gray-400 text-sm font-medium mb-2" for="name">
             Task Name
@@ -102,7 +100,6 @@ function handleSubmit(): void {
           />
         </div>
 
-        <!-- category -->
         <div>
           <label class="block text-gray-400 text-sm font-medium mb-2" for="category">
             Category
@@ -122,7 +119,6 @@ function handleSubmit(): void {
           </div>
         </div>
 
-        <!-- color -->
         <div>
           <label class="block text-gray-400 text-sm font-medium mb-3">Color</label>
           <div class="flex items-center gap-3 flex-wrap">
@@ -144,7 +140,6 @@ function handleSubmit(): void {
           </div>
         </div>
 
-        <!-- preview -->
         <div>
           <label class="block text-gray-400 text-sm font-medium mb-3">Preview</label>
           <div
@@ -164,7 +159,6 @@ function handleSubmit(): void {
           </div>
         </div>
 
-        <!-- actions -->
         <div class="flex gap-3 pt-2">
           <RouterLink
             to="/tasks"

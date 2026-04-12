@@ -4,7 +4,8 @@ export const userSeeder: UserInterface = {
   id: '1',
   name: 'Admin User',
   email: 'admin@example.com',
+  password: 'admin123',
   role: 'admin',
-  totalTrackedTime: 15300000,
-  tasksCount: 4,
+  totalTrackedTime: 0,
+  tasksCount: 0,
 };

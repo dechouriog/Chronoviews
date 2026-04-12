@@ -44,10 +44,12 @@ interface CategoryStat {
 const categoryStats = computed<CategoryStat[]>(() => {
   const categoryMap: Record<string, { totalTime: number; color: string }> = {};
   allTasks.value.forEach((task: TaskInterface) => {
-    if (!categoryMap[task.category]) {
-      categoryMap[task.category] = { totalTime: 0, color: task.color };
+    const existing = categoryMap[task.category];
+    if (!existing) {
+      categoryMap[task.category] = { totalTime: task.totalTime, color: task.color };
+    } else {
+      existing.totalTime += task.totalTime;
     }
-    categoryMap[task.category].totalTime += task.totalTime;
   });
   const totalMs = allTasks.value.reduce(
     (total: number, task: TaskInterface) => total + task.totalTime, 0,
@@ -84,13 +86,11 @@ const barChartData = computed(() =>
 <template>
   <section class="min-h-full bg-gray-950 text-white p-6">
 
-    <!-- header -->
     <div class="mb-8">
       <h2 class="text-3xl font-bold text-white">Admin</h2>
       <p class="text-gray-400 mt-1">Global overview of all tracked activity</p>
     </div>
 
-    <!-- stat cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
       <StatCard
         title="Total Hours Tracked"
@@ -122,7 +122,6 @@ const barChartData = computed(() =>
       />
     </div>
 
-    <!-- charts -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-6">
