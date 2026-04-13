@@ -13,7 +13,7 @@ const confirmPassword = ref<string>('');
 const errorMessage = ref<string>('');
 const isLoading = ref<boolean>(false);
 
-async function handleRegister(): Promise<void> {
+function handleRegister(): void {
   errorMessage.value = '';
 
   if (password.value !== confirmPassword.value) {
@@ -28,20 +28,16 @@ async function handleRegister(): Promise<void> {
 
   isLoading.value = true;
 
-  try {
-    const success = AuthService.register(name.value, email.value, password.value);
+  const success = AuthService.register(name.value, email.value, password.value);
 
-    if (!success) {
-      errorMessage.value = 'An account with this email already exists.';
-      return;
-    }
+  isLoading.value = false;
 
-    await router.push({ name: 'tasks' });
-  } catch {
-    errorMessage.value = 'Something went wrong. Please try again.';
-  } finally {
-    isLoading.value = false;
+  if (!success) {
+    errorMessage.value = 'An account with this email already exists.';
+    return;
   }
+
+  router.push({ name: 'tasks' });
 }
 </script>
 
@@ -64,6 +60,7 @@ async function handleRegister(): Promise<void> {
 
         <form @submit.prevent="handleRegister" class="space-y-5">
 
+          <!-- name -->
           <div>
             <label class="block text-gray-400 text-sm font-medium mb-2" for="name">
               Full Name
@@ -78,6 +75,7 @@ async function handleRegister(): Promise<void> {
             />
           </div>
 
+          <!-- email -->
           <div>
             <label class="block text-gray-400 text-sm font-medium mb-2" for="email">
               Email
@@ -92,6 +90,7 @@ async function handleRegister(): Promise<void> {
             />
           </div>
 
+          <!-- password -->
           <div>
             <label class="block text-gray-400 text-sm font-medium mb-2" for="password">
               Password
@@ -106,6 +105,7 @@ async function handleRegister(): Promise<void> {
             />
           </div>
 
+          <!-- confirm password -->
           <div>
             <label class="block text-gray-400 text-sm font-medium mb-2" for="confirmPassword">
               Confirm Password
@@ -120,6 +120,7 @@ async function handleRegister(): Promise<void> {
             />
           </div>
 
+          <!-- error -->
           <div
             v-if="errorMessage"
             class="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3"
@@ -128,6 +129,7 @@ async function handleRegister(): Promise<void> {
             <p class="text-red-400 text-sm">{{ errorMessage }}</p>
           </div>
 
+          <!-- submit -->
           <button
             type="submit"
             :disabled="isLoading"
@@ -141,6 +143,7 @@ async function handleRegister(): Promise<void> {
 
         </form>
 
+        <!-- link to login -->
         <p class="text-center text-gray-500 text-sm mt-6">
           Already have an account?
           <RouterLink
@@ -153,6 +156,7 @@ async function handleRegister(): Promise<void> {
 
       </div>
 
+      <!-- footer -->
       <p class="text-center text-gray-600 text-xs mt-6">
         CronoView · EAFIT · Ingeniería de Software para Aplicaciones Web
       </p>
