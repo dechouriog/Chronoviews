@@ -13,7 +13,7 @@ const confirmPassword = ref<string>('');
 const errorMessage = ref<string>('');
 const isLoading = ref<boolean>(false);
 
-function handleRegister(): void {
+async function handleRegister(): Promise<void> {
   errorMessage.value = '';
 
   if (password.value !== confirmPassword.value) {
@@ -28,16 +28,20 @@ function handleRegister(): void {
 
   isLoading.value = true;
 
-  const success = AuthService.register(name.value, email.value, password.value);
+  try {
+    const success = AuthService.register(name.value, email.value, password.value);
 
-  isLoading.value = false;
+    if (!success) {
+      errorMessage.value = 'An account with this email already exists.';
+      return;
+    }
 
-  if (!success) {
-    errorMessage.value = 'An account with this email already exists.';
-    return;
+    await router.push({ name: 'tasks' });
+  } catch {
+    errorMessage.value = 'Something went wrong. Please try again.';
+  } finally {
+    isLoading.value = false;
   }
-
-  router.push({ name: 'tasks' });
 }
 </script>
 
@@ -60,7 +64,6 @@ function handleRegister(): void {
 
         <form @submit.prevent="handleRegister" class="space-y-5">
 
-          <!-- name -->
           <div>
             <label class="block text-gray-400 text-sm font-medium mb-2" for="name">
               Full Name
@@ -75,7 +78,6 @@ function handleRegister(): void {
             />
           </div>
 
-          <!-- email -->
           <div>
             <label class="block text-gray-400 text-sm font-medium mb-2" for="email">
               Email
@@ -90,7 +92,6 @@ function handleRegister(): void {
             />
           </div>
 
-          <!-- password -->
           <div>
             <label class="block text-gray-400 text-sm font-medium mb-2" for="password">
               Password
@@ -105,7 +106,6 @@ function handleRegister(): void {
             />
           </div>
 
-          <!-- confirm password -->
           <div>
             <label class="block text-gray-400 text-sm font-medium mb-2" for="confirmPassword">
               Confirm Password
@@ -120,7 +120,6 @@ function handleRegister(): void {
             />
           </div>
 
-          <!-- error -->
           <div
             v-if="errorMessage"
             class="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3"
@@ -129,7 +128,6 @@ function handleRegister(): void {
             <p class="text-red-400 text-sm">{{ errorMessage }}</p>
           </div>
 
-          <!-- submit -->
           <button
             type="submit"
             :disabled="isLoading"
@@ -143,7 +141,6 @@ function handleRegister(): void {
 
         </form>
 
-        <!-- link to login -->
         <p class="text-center text-gray-500 text-sm mt-6">
           Already have an account?
           <RouterLink
@@ -156,7 +153,6 @@ function handleRegister(): void {
 
       </div>
 
-      <!-- footer -->
       <p class="text-center text-gray-600 text-xs mt-6">
         CronoView · EAFIT · Ingeniería de Software para Aplicaciones Web
       </p>
