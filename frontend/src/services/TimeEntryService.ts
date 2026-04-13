@@ -1,6 +1,9 @@
 import { useTimeEntryStore } from '@/stores/timeentrystore';
+
 import type { TimeEntryInterface } from '@/interfaces/TimeEntryInterface';
 import type { CreateTimeEntryDTO } from '@/dtos/CreateTimeEntryDTO';
+
+import { generateId } from '@/utils/generateId';
 
 export class TimeEntryService {
   static getTimeEntries(): TimeEntryInterface[] {
@@ -14,7 +17,7 @@ export class TimeEntryService {
   }
 
   static createTimeEntry(entry: CreateTimeEntryDTO): void {
-    const id = crypto.randomUUID();
+    const id = generateId();
     useTimeEntryStore().timeEntries.push({ id, ...entry });
   }
 

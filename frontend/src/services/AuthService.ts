@@ -4,6 +4,8 @@ import { authSeeder } from '@/stores/authseeder';
 
 import type { UserInterface } from '@/interfaces/UserInterface';
 
+import { generateId } from '@/utils/generateId';
+
 export class AuthService {
   static getAllUsers(): UserInterface[] {
     return [...authSeeder, ...useAuthStore().registeredUsers];
@@ -28,7 +30,7 @@ export class AuthService {
     if (exists) return false;
 
     const newUser: UserInterface = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       name: name.trim(),
       email: email.trim(),
       password,

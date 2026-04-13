@@ -1,6 +1,9 @@
 import { useGoalStore } from '@/stores/goalstore';
+
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
+
+import { generateId } from '@/utils/generateId';
 
 export class GoalService {
   static getGoals(): GoalInterface[] {
@@ -12,7 +15,7 @@ export class GoalService {
   }
 
   static createGoal(goal: CreateGoalDTO): void {
-    const id = crypto.randomUUID();
+    const id = generateId();
     useGoalStore().goals.push({ id, ...goal });
   }
 

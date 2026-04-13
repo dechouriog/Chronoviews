@@ -4,6 +4,8 @@ import { useUserStore } from '@/stores/userstore';
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 import type { CreateTaskDTO } from '@/dtos/CreateTaskDTO';
 
+import { generateId } from '@/utils/generateId';
+
 export class TaskService {
   private static getCurrentUserId(): string | null {
     return useUserStore().user?.id ?? null;
@@ -22,7 +24,7 @@ export class TaskService {
   static createTask(task: CreateTaskDTO): void {
     const userId = TaskService.getCurrentUserId();
     if (!userId) return;
-    const id = crypto.randomUUID();
+    const id = generateId();
     useTaskStore().tasks.push({ id, userId, ...task });
   }
 

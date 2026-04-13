@@ -4,6 +4,8 @@ import { AuthService } from '@/services/AuthService';
 import type { UserInterface } from '@/interfaces/UserInterface';
 import type { CreateUserDTO } from '@/dtos/CreateUserDTO';
 
+import { generateId } from '@/utils/generateId';
+
 export class UserService {
   static getUser(): UserInterface | null {
     return useUserStore().user;
@@ -14,7 +16,7 @@ export class UserService {
   }
 
   static setUser(user: CreateUserDTO): void {
-    const id = crypto.randomUUID();
+    const id = generateId();
     useUserStore().user = { id, ...user };
   }
 
