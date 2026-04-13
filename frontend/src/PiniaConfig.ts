@@ -12,9 +12,7 @@ export default class PiniaConfig {
     const savedState = localStorage.getItem('piniaState');
     if (savedState) {
       const parsed = JSON.parse(savedState);
-      if (!parsed.auth) {
-        parsed.auth = { registeredUsers: [] };
-      }
+      parsed.user = { user: null };
       pinia.state.value = parsed;
     } else {
       pinia.state.value = {
