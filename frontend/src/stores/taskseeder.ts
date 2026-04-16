@@ -7,9 +7,7 @@ export const taskSeeder: TaskInterface[] = [
     name: 'Morning Run',
     color: '#10B981',
     category: 'Fitness',
-    totalTime: 3600000,
-    isRunning: false,
-    lastStarted: 0,
+    totalHours: 2.5,
   },
   {
     id: '2',
@@ -17,9 +15,7 @@ export const taskSeeder: TaskInterface[] = [
     name: 'Deep Work Session',
     color: '#3B82F6',
     category: 'Work',
-    totalTime: 7200000,
-    isRunning: false,
-    lastStarted: 0,
+    totalHours: 8,
   },
   {
     id: '3',
@@ -27,9 +23,7 @@ export const taskSeeder: TaskInterface[] = [
     name: 'Vue.js Course',
     color: '#8B5CF6',
     category: 'Study',
-    totalTime: 2700000,
-    isRunning: false,
-    lastStarted: 0,
+    totalHours: 3,
   },
   {
     id: '4',
@@ -37,8 +31,6 @@ export const taskSeeder: TaskInterface[] = [
     name: 'Evening Meditation',
     color: '#A855F7',
     category: 'Spirituality',
-    totalTime: 1800000,
-    isRunning: false,
-    lastStarted: 0,
+    totalHours: 1,
   },
 ];
