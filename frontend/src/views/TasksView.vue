@@ -1,43 +1,42 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { TaskService } from '@/services/TaskService';
+import { UserService } from '@/services/UserService';
 
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 
 import StatCard from '@/components/StatCard.vue';
 import TaskCard from '@/components/TaskCard.vue';
 
-const tasks = computed<TaskInterface[]>(() => TaskService.getTasks());
-const tick = ref<number>(0);
+const userId = computed<string>(() => UserService.getUser()?.id ?? '');
+const tasks = computed<TaskInterface[]>(() => TaskService.getTasksByUserId(userId.value));
 const taskToDelete = ref<string | null>(null);
 
-let interval: ReturnType<typeof setInterval>;
-
-onMounted(() => {
-  interval = setInterval(() => { tick.value++; }, 1000);
+const totalHours = computed<number>(() => {
+  return tasks.value.reduce((total: number, task: TaskInterface) => total + task.totalHours, 0);
 });
 
-onUnmounted(() => {
-  clearInterval(interval);
+const topTask = computed<TaskInterface | undefined>(() => {
+  return tasks.value.reduce(
+    (best: TaskInterface | undefined, task: TaskInterface) =>
+      !best || task.totalHours > best.totalHours ? task : best,
+    undefined,
+  );
 });
 
-function getLiveTime(task: TaskInterface): number {
-  void tick.value;
-  if (!task.isRunning) return task.totalTime;
-  return task.totalTime + (Date.now() - task.lastStarted);
+const tasksWithHours = computed<number>(() => {
+  return tasks.value.filter((task: TaskInterface) => task.totalHours > 0).length;
+});
+
+function formatHours(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function formatTime(milliseconds: number): string {
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
-function handleToggle(id: string): void {
-  TaskService.toggleTask(id);
+function handleAddHours(id: string, hours: number): void {
+  TaskService.addHours(id, hours);
 }
 
 function confirmDelete(id: string): void {
@@ -53,20 +52,6 @@ function handleDelete(): void {
 function cancelDelete(): void {
   taskToDelete.value = null;
 }
-
-const totalTimeToday = computed<number>(() => {
-  return tasks.value.reduce((total: number, task: TaskInterface) => {
-    return total + getLiveTime(task);
-  }, 0);
-});
-
-const runningTask = computed<TaskInterface | undefined>(() => {
-  return tasks.value.find((task: TaskInterface) => task.isRunning);
-});
-
-const tasksWithTime = computed<number>(() => {
-  return tasks.value.filter((task: TaskInterface) => task.totalTime > 0).length;
-});
 </script>
 
 <template>
@@ -76,7 +61,7 @@ const tasksWithTime = computed<number>(() => {
     <div class="flex items-center justify-between mb-8">
       <div>
         <h2 class="text-3xl font-bold text-white">Time Tracker</h2>
-        <p class="text-gray-400 mt-1">Track your time and boost productivity</p>
+        <p class="text-gray-400 mt-1">Log your time and boost productivity</p>
       </div>
       <RouterLink
         to="/tasks/create"
@@ -90,22 +75,22 @@ const tasksWithTime = computed<number>(() => {
     <!-- stat cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
       <StatCard
-        title="Total Time Today"
-        :value="formatTime(totalTimeToday)"
+        title="Total Hours Logged"
+        :value="formatHours(totalHours)"
         subtitle="Across all tasks"
         icon="clock"
         icon-color="text-green-400"
       />
       <StatCard
-        title="Currently Tracking"
-        :value="runningTask ? runningTask.name : '—'"
-        :subtitle="runningTask ? 'Timer running' : 'No task running'"
-        icon="wave-square"
+        title="Most Time Spent"
+        :value="topTask ? topTask.name : '—'"
+        :subtitle="topTask ? formatHours(topTask.totalHours) : 'No data'"
+        icon="arrow-trend-up"
         icon-color="text-cyan-400"
       />
       <StatCard
-        title="Tasks Tracked"
-        :value="`${tasksWithTime} / ${tasks.length}`"
+        title="Tasks with Hours"
+        :value="`${tasksWithHours} / ${tasks.length}`"
         subtitle="Tasks with time logged"
         icon="bolt"
         icon-color="text-orange-400"
@@ -124,7 +109,7 @@ const tasksWithTime = computed<number>(() => {
         <div class="flex-1">
           <TaskCard
             :task="task"
-            @toggle="handleToggle"
+            @add-hours="handleAddHours"
           />
         </div>
         <button

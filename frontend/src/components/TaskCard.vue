@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { ref } from 'vue';
 
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 
@@ -8,75 +8,88 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  toggle: [id: string];
+  addHours: [id: string, hours: number];
 }>();
 
-const tick = ref<number>(0);
+const showInput = ref<boolean>(false);
+const hoursInput = ref<number>(0);
 
-let interval: ReturnType<typeof setInterval>;
+function formatHours(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
 
-onMounted(() => {
-  interval = setInterval(() => { tick.value++; }, 1000);
-});
-
-onUnmounted(() => {
-  clearInterval(interval);
-});
-
-const liveTime = computed<number>(() => {
-  void tick.value;
-  if (!props.task.isRunning) return props.task.totalTime;
-  return props.task.totalTime + (Date.now() - props.task.lastStarted);
-});
-
-const formattedTime = computed<string>(() => {
-  const totalSeconds = Math.floor(liveTime.value / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-});
-
-function handleToggle(): void {
-  emit('toggle', props.task.id);
+function handleAddHours(): void {
+  if (hoursInput.value <= 0) return;
+  emit('addHours', props.task.id, hoursInput.value);
+  hoursInput.value = 0;
+  showInput.value = false;
 }
 </script>
 
 <template>
   <div
-    class="bg-gray-900 rounded-xl p-5 border border-gray-800 flex items-center justify-between transition duration-200"
+    class="bg-gray-900 rounded-xl p-5 border border-gray-800 transition duration-200"
     :style="{ borderLeftColor: props.task.color, borderLeftWidth: '4px' }"
   >
-    <div class="flex items-center gap-4">
-      <button
-        @click="handleToggle"
-        class="w-12 h-12 rounded-full flex items-center justify-center transition duration-200"
-        :style="props.task.isRunning
-          ? { backgroundColor: props.task.color }
-          : { backgroundColor: '#374151' }"
-      >
-        <i
-          class="text-white text-sm"
-          :class="props.task.isRunning ? 'fas fa-pause' : 'fas fa-play'"
-        ></i>
-      </button>
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div
+          class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+          :style="{ backgroundColor: props.task.color + '33' }"
+        >
+          <i class="fas fa-clock text-sm" :style="{ color: props.task.color }"></i>
+        </div>
+        <div>
+          <p class="font-semibold text-white text-lg">{{ props.task.name }}</p>
+          <p class="text-gray-400 text-sm">{{ props.task.category }}</p>
+        </div>
+      </div>
 
-      <div>
-        <p class="font-semibold text-white text-lg">{{ props.task.name }}</p>
-        <p class="text-gray-400 text-sm">{{ props.task.category }}</p>
+      <div class="flex items-center gap-3">
+        <div class="text-right">
+          <p class="text-2xl font-bold" :style="{ color: props.task.color }">
+            {{ formatHours(props.task.totalHours) }}
+          </p>
+          <p class="text-gray-500 text-xs mt-1">Total logged</p>
+        </div>
+        <button
+          @click="showInput = !showInput"
+          class="w-9 h-9 rounded-lg flex items-center justify-center transition duration-200"
+          :class="showInput
+            ? 'bg-green-500 text-black'
+            : 'bg-gray-700 hover:bg-gray-600 text-gray-300'"
+          title="Add hours"
+        >
+          <i class="fas fa-plus text-xs"></i>
+        </button>
       </div>
     </div>
 
-    <div class="text-right">
-      <p
-        class="text-2xl font-bold font-mono"
-        :style="{ color: props.task.isRunning ? props.task.color : '#ffffff' }"
+    <!-- add hours input -->
+    <div v-if="showInput" class="mt-4 flex items-center gap-3">
+      <input
+        v-model.number="hoursInput"
+        type="number"
+        min="0.1"
+        step="0.5"
+        placeholder="Hours to add"
+        class="flex-1 bg-gray-800 border border-gray-700 text-white rounded-lg px-3 py-2 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+      />
+      <button
+        @click="handleAddHours"
+        :disabled="hoursInput <= 0"
+        class="bg-green-500 hover:bg-green-400 disabled:opacity-50 text-black font-semibold px-4 py-2 rounded-lg text-sm transition duration-200"
       >
-        {{ formattedTime }}
-      </p>
-      <p class="text-gray-500 text-xs mt-1">
-        {{ props.task.isRunning ? 'Running' : 'Total time' }}
-      </p>
+        Add
+      </button>
+      <button
+        @click="showInput = false; hoursInput = 0"
+        class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-lg text-sm transition duration-200"
+      >
+        Cancel
+      </button>
     </div>
   </div>
 </template>
