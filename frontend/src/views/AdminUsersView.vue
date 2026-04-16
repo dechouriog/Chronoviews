@@ -13,14 +13,14 @@ function getTaskCountForUser(userId: string): number {
   return useTaskStore().tasks.filter((task: TaskInterface) => task.userId === userId).length;
 }
 
-function getTotalTimeForUser(userId: string): number {
+function getTotalHoursForUser(userId: string): number {
   return useTaskStore().tasks
     .filter((task: TaskInterface) => task.userId === userId)
-    .reduce((total: number, task: TaskInterface) => total + task.totalTime, 0);
+    .reduce((total: number, task: TaskInterface) => total + task.totalHours, 0);
 }
 
-function formatHours(milliseconds: number): string {
-  return `${(milliseconds / 3600000).toFixed(1)}h`;
+function formatHours(hours: number): string {
+  return `${hours.toFixed(1)}h`;
 }
 
 function getInitials(name: string): string {
@@ -41,13 +41,11 @@ function getRoleBadgeClass(role: string): string {
 <template>
   <section class="min-h-full bg-gray-950 text-white p-6">
 
-    <!-- header -->
     <div class="mb-8">
       <h2 class="text-3xl font-bold text-white">Users</h2>
       <p class="text-gray-400 mt-1">All registered accounts on the platform</p>
     </div>
 
-    <!-- table -->
     <div class="bg-gray-900 rounded-xl border border-gray-800">
       <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
         <div>
@@ -67,7 +65,7 @@ function getRoleBadgeClass(role: string): string {
               <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Email</th>
               <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Role</th>
               <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Tasks</th>
-              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Total Tracked</th>
+              <th class="text-left text-gray-500 text-xs font-medium uppercase tracking-wider px-6 py-3">Total Hours</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-800">
@@ -105,7 +103,7 @@ function getRoleBadgeClass(role: string): string {
                 <span class="text-gray-300 text-sm">{{ getTaskCountForUser(user.id) }}</span>
               </td>
               <td class="px-6 py-4">
-                <span class="text-gray-300 text-sm">{{ formatHours(getTotalTimeForUser(user.id)) }}</span>
+                <span class="text-gray-300 text-sm">{{ formatHours(getTotalHoursForUser(user.id)) }}</span>
               </td>
             </tr>
           </tbody>

@@ -14,11 +14,8 @@ import CategoryBarChart from '@/components/CategoryBarChart.vue';
 const allTasks = computed<TaskInterface[]>(() => useTaskStore().tasks);
 const users = computed<UserInterface[]>(() => AuthService.getAllUsers());
 
-const totalTrackedHours = computed<number>(() => {
-  const totalMs = allTasks.value.reduce(
-    (total: number, task: TaskInterface) => total + task.totalTime, 0,
-  );
-  return totalMs / 3600000;
+const totalHours = computed<number>(() => {
+  return allTasks.value.reduce((total: number, task: TaskInterface) => total + task.totalHours, 0);
 });
 
 const uniqueCategories = computed<string[]>(() => {
@@ -26,39 +23,39 @@ const uniqueCategories = computed<string[]>(() => {
 });
 
 const topCategory = computed<string>(() => {
-  const categoryTime: Record<string, number> = {};
+  const categoryHours: Record<string, number> = {};
   allTasks.value.forEach((task: TaskInterface) => {
-    categoryTime[task.category] = (categoryTime[task.category] ?? 0) + task.totalTime;
+    categoryHours[task.category] = (categoryHours[task.category] ?? 0) + task.totalHours;
   });
-  const sorted = Object.entries(categoryTime).sort(([, a], [, b]) => b - a);
+  const sorted = Object.entries(categoryHours).sort(([, a], [, b]) => b - a);
   return sorted[0]?.[0] ?? '—';
 });
 
 interface CategoryStat {
   name: string;
   color: string;
-  totalTime: number;
+  totalHours: number;
   percentage: number;
 }
 
 const categoryStats = computed<CategoryStat[]>(() => {
-  const categoryMap: Record<string, { totalTime: number; color: string }> = {};
+  const categoryMap: Record<string, { totalHours: number; color: string }> = {};
   allTasks.value.forEach((task: TaskInterface) => {
     const existing = categoryMap[task.category];
     if (!existing) {
-      categoryMap[task.category] = { totalTime: task.totalTime, color: task.color };
+      categoryMap[task.category] = { totalHours: task.totalHours, color: task.color };
     } else {
-      existing.totalTime += task.totalTime;
+      existing.totalHours += task.totalHours;
     }
   });
-  const totalMs = allTasks.value.reduce(
-    (total: number, task: TaskInterface) => total + task.totalTime, 0,
+  const total = allTasks.value.reduce(
+    (sum: number, task: TaskInterface) => sum + task.totalHours, 0,
   );
   return Object.entries(categoryMap).map(([name, data]) => ({
     name,
     color: data.color,
-    totalTime: data.totalTime,
-    percentage: totalMs > 0 ? Math.round((data.totalTime / totalMs) * 100) : 0,
+    totalHours: data.totalHours,
+    percentage: total > 0 ? Math.round((data.totalHours / total) * 100) : 0,
   }));
 });
 
@@ -67,7 +64,7 @@ const donutLabels = computed<string[]>(() =>
 );
 
 const donutData = computed<number[]>(() =>
-  categoryStats.value.map((cat: CategoryStat) => cat.totalTime),
+  categoryStats.value.map((cat: CategoryStat) => cat.totalHours),
 );
 
 const donutColors = computed<string[]>(() =>
@@ -77,7 +74,7 @@ const donutColors = computed<string[]>(() =>
 const barChartData = computed(() =>
   categoryStats.value.map((cat: CategoryStat) => ({
     name: cat.name,
-    value: cat.totalTime,
+    value: cat.totalHours,
     color: cat.color,
   })),
 );
@@ -94,7 +91,7 @@ const barChartData = computed(() =>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
       <StatCard
         title="Total Hours Tracked"
-        :value="`${totalTrackedHours.toFixed(0)}h`"
+        :value="`${totalHours.toFixed(1)}h`"
         subtitle="All users combined"
         icon="clock"
         icon-color="text-green-400"
@@ -124,16 +121,9 @@ const barChartData = computed(() =>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
-        <h3 class="text-lg font-semibold text-white mb-6">
-          Global Time Distribution by Category
-        </h3>
-        <DonutChart
-          :labels="donutLabels"
-          :data="donutData"
-          :colors="donutColors"
-        />
+        <h3 class="text-lg font-semibold text-white mb-6">Global Time Distribution by Category</h3>
+        <DonutChart :labels="donutLabels" :data="donutData" :colors="donutColors" />
       </div>
-
       <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
         <h3 class="text-lg font-semibold text-white mb-2">Hours by Category</h3>
         <p class="text-gray-500 text-sm mb-4">Sorted by time spent</p>
