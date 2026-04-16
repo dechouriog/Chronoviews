@@ -4,7 +4,5 @@ export interface TaskInterface {
   name: string;
   color: string;
   category: string;
-  totalTime: number;
-  isRunning: boolean;
-  lastStarted: number;
+  totalHours: number;
 }
