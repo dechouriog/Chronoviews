@@ -37,7 +37,7 @@ function handleLogin(): void {
         <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
           <i class="fas fa-clock text-black text-xl"></i>
         </div>
-        <span class="text-white text-3xl font-bold">CronoView</span>
+        <span class="text-white text-3xl font-bold">ChronoView</span>
       </div>
 
       <!-- card -->
@@ -130,7 +130,7 @@ function handleLogin(): void {
 
       <!-- footer -->
       <p class="text-center text-gray-600 text-xs mt-6">
-        CronoView · EAFIT · Ingeniería de Software para Aplicaciones Web
+        ChronoView · EAFIT · Ingeniería de Software para Aplicaciones Web
       </p>
 
     </div>

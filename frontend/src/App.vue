@@ -32,7 +32,7 @@ function handleLogout(): void {
         <div class="p-6 flex-1">
           <div class="flex items-center mb-8">
             <i class="fas fa-clock text-2xl mr-3 text-green-400"></i>
-            <span class="font-bold text-xl text-white">CronoView</span>
+            <span class="font-bold text-xl text-white">ChronoView</span>
           </div>
 
           <nav class="space-y-1">
