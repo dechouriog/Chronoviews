@@ -1,3 +1,5 @@
+//Por Diego Chourio
+
 const LANGUAGE_KEY = 'settings:language';
 const TIME_FORMAT_KEY = 'settings:timeFormat';
 

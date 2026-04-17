@@ -1,9 +1,10 @@
-import { useGoalStore } from '@/stores/goalstore';
-import { TaskService } from '@/services/TaskService';
+//Diego Chourio
 
-import type { GoalInterface } from '@/interfaces/GoalInterface';
+// Internal imports
 import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
-
+import type { GoalInterface } from '@/interfaces/GoalInterface';
+import { TaskService } from '@/services/TaskService';
+import { useGoalStore } from '@/stores/goalstore';
 import { generateId } from '@/utils/generateId';
 
 export class GoalService {

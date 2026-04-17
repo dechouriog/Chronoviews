@@ -1,5 +1,4 @@
 // Por Diego Chourio
-
 <script setup lang="ts">
 
 

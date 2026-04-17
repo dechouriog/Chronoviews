@@ -1,10 +1,12 @@
-import { useUserStore } from '@/stores/userstore';
-import { useAuthStore } from '@/stores/authstore';
-import { authSeeder } from '@/stores/authseeder';
+// Por Diego Chourio
 
+// Internal imports
 import type { UserInterface } from '@/interfaces/UserInterface';
-
+import { authSeeder } from '@/stores/authseeder';
+import { useAuthStore } from '@/stores/authstore';
+import { useUserStore } from '@/stores/userstore';
 import { generateId } from '@/utils/generateId';
+
 
 export class AuthService {
   static getAllUsers(): UserInterface[] {

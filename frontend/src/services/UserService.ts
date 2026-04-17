@@ -1,9 +1,10 @@
-import { useUserStore } from '@/stores/userstore';
-import { AuthService } from '@/services/AuthService';
+//Diego Chourio
 
-import type { UserInterface } from '@/interfaces/UserInterface';
+// Internal imports
 import type { CreateUserDTO } from '@/dtos/CreateUserDTO';
-
+import type { UserInterface } from '@/interfaces/UserInterface';
+import { AuthService } from '@/services/AuthService';
+import { useUserStore } from '@/stores/userstore';
 import { generateId } from '@/utils/generateId';
 
 export class UserService {
