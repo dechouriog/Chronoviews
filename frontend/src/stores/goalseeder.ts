@@ -1,3 +1,6 @@
+// Por Diego Chourio
+
+// Internal
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 
 export const goalSeeder: GoalInterface[] = [

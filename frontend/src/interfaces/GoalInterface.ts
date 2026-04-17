@@ -1,3 +1,5 @@
+// Por Diego Chourio
+
 export interface GoalInterface {
   id: string;
   userId: string;

@@ -1,3 +1,6 @@
+// Por Diego Chourio
+
+// Internal
 import type { UserInterface } from '@/interfaces/UserInterface';
 
 export const authSeeder: UserInterface[] = [
