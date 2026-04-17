@@ -1,13 +1,16 @@
+// Por Diego Chourio
 <script setup lang="ts">
+
+// External imports
 import { computed, ref } from 'vue';
 
+// Internal imports
+import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
+import type { GoalInterface } from '@/interfaces/GoalInterface';
+import type { TaskInterface } from '@/interfaces/TaskInterface';
 import { GoalService } from '@/services/GoalService';
 import { TaskService } from '@/services/TaskService';
 import { UserService } from '@/services/UserService';
-
-import type { GoalInterface } from '@/interfaces/GoalInterface';
-import type { TaskInterface } from '@/interfaces/TaskInterface';
-import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
 
 const userId = computed<string>(() => UserService.getUser()?.id ?? '');
 const goals = computed<GoalInterface[]>(() => GoalService.getGoalsByUserId(userId.value));

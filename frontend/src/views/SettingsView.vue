@@ -1,7 +1,11 @@
+// Por Diego Chourio
 <script setup lang="ts">
+
+// External imports
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+// Internal imports
 import { AuthService } from '@/services/AuthService';
 import { SettingsService } from '@/services/SettingsService';
 

@@ -1,6 +1,11 @@
+// Por Diego Chourio
+
 <script setup lang="ts">
+
+// External imports
 import { computed } from 'vue';
 
+// Internal imports
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 
 const props = defineProps<{

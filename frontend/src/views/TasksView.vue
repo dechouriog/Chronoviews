@@ -1,13 +1,15 @@
+// Por Diego Chourio
+
 <script setup lang="ts">
+// External imports
 import { computed, ref } from 'vue';
 
-import { TaskService } from '@/services/TaskService';
-import { UserService } from '@/services/UserService';
-
-import type { TaskInterface } from '@/interfaces/TaskInterface';
-
+// Internal imports
 import StatCard from '@/components/StatCard.vue';
 import TaskCard from '@/components/TaskCard.vue';
+import type { TaskInterface } from '@/interfaces/TaskInterface';
+import { TaskService } from '@/services/TaskService';
+import { UserService } from '@/services/UserService'
 
 const userId = computed<string>(() => UserService.getUser()?.id ?? '');
 const tasks = computed<TaskInterface[]>(() => TaskService.getTasksByUserId(userId.value));

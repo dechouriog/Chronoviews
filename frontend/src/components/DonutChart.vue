@@ -1,4 +1,8 @@
+// Por Diego Chourio
+
 <script setup lang="ts">
+
+// External imports
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { Chart, ArcElement, Tooltip, Legend, DoughnutController } from 'chart.js';
 

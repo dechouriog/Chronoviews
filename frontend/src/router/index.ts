@@ -1,14 +1,18 @@
+// Por Diego Chourio
+
+// External imports
 import { createRouter, createWebHistory } from 'vue-router';
 
+// Internal imports
+import AdminUsersView from '@/views/AdminUsersView.vue';
+import AdminView from '@/views/AdminView.vue';
+import GoalsView from '@/views/GoalsView.vue';
 import LoginView from '@/views/LoginView.vue';
 import RegisterView from '@/views/RegisterView.vue';
-import TasksView from '@/views/TasksView.vue';
-import TasksCreateView from '@/views/TasksCreateView.vue';
-import GoalsView from '@/views/GoalsView.vue';
-import StatisticsView from '@/views/StatisticsView.vue';
 import SettingsView from '@/views/SettingsView.vue';
-import AdminView from '@/views/AdminView.vue';
-import AdminUsersView from '@/views/AdminUsersView.vue';
+import StatisticsView from '@/views/StatisticsView.vue';
+import TasksCreateView from '@/views/TasksCreateView.vue';
+import TasksView from '@/views/TasksView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

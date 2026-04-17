@@ -1,15 +1,17 @@
+// Por Diego Chourio
 <script setup lang="ts">
+
+// External imports
 import { computed } from 'vue';
 
-import { AuthService } from '@/services/AuthService';
-import { useTaskStore } from '@/stores/taskstore';
-
+// Internal imports
+import CategoryBarChart from '@/components/CategoryBarChart.vue';
+import DonutChart from '@/components/DonutChart.vue';
+import StatCard from '@/components/StatCard.vue';
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 import type { UserInterface } from '@/interfaces/UserInterface';
-
-import StatCard from '@/components/StatCard.vue';
-import DonutChart from '@/components/DonutChart.vue';
-import CategoryBarChart from '@/components/CategoryBarChart.vue';
+import { AuthService } from '@/services/AuthService';
+import { useTaskStore } from '@/stores/taskstore';
 
 const allTasks = computed<TaskInterface[]>(() => useTaskStore().tasks);
 const users = computed<UserInterface[]>(() => AuthService.getAllUsers());

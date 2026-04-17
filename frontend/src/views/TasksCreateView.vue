@@ -1,11 +1,15 @@
+// Por Diego Chourio
 <script setup lang="ts">
+
+// External imports
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+// Internal imports
+import type { CreateTaskDTO } from '@/dtos/CreateTaskDTO';
+
 import { TaskService } from '@/services/TaskService';
 import { UserService } from '@/services/UserService';
-
-import type { CreateTaskDTO } from '@/dtos/CreateTaskDTO';
 
 const CATEGORIES: string[] = [
   'Work', 'Study', 'Fitness', 'Health', 'Nutrition',

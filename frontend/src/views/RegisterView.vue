@@ -1,7 +1,11 @@
+// Por Diego Chourio
 <script setup lang="ts">
+
+// External imports
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+// Internal imports
 import { AuthService } from '@/services/AuthService';
 
 const router = useRouter();
@@ -158,7 +162,7 @@ function handleRegister(): void {
 
       <!-- footer -->
       <p class="text-center text-gray-600 text-xs mt-6">
-        CronoView · EAFIT · Ingeniería de Software para Aplicaciones Web
+        ChronoView · EAFIT · Ingeniería de Software para Aplicaciones Web
       </p>
 
     </div>

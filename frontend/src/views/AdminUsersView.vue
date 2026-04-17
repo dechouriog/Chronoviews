@@ -1,11 +1,14 @@
+// Por Diego Chourio
 <script setup lang="ts">
+
+// External imports
 import { computed } from 'vue';
 
+// Internal imports
+import type { TaskInterface } from '@/interfaces/TaskInterface';
+import type { UserInterface } from '@/interfaces/UserInterface';
 import { AuthService } from '@/services/AuthService';
 import { useTaskStore } from '@/stores/taskstore';
-
-import type { UserInterface } from '@/interfaces/UserInterface';
-import type { TaskInterface } from '@/interfaces/TaskInterface';
 
 const users = computed<UserInterface[]>(() => AuthService.getAllUsers());
 

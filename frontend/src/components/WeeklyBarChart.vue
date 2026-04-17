@@ -1,7 +1,14 @@
+// Por Diego Chourio
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+
+
+// External imports
 import * as echarts from 'echarts';
 import type { BarSeriesOption } from 'echarts';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+
+// Internal imports
+// (No hay imports internos en este archivo)
 
 const props = defineProps<{
   days: string[];

@@ -1,3 +1,5 @@
+// Por Diego Chourio
+
 <script setup lang="ts">
 const props = defineProps<{
   title: string;

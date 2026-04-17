@@ -1,15 +1,19 @@
+// Por Diego Chourio
 <script setup lang="ts">
+
+// External imports
 import { computed, ref } from 'vue';
 
-import { TaskService } from '@/services/TaskService';
-import { UserService } from '@/services/UserService';
+// Internal imports
+import DonutChart from '@/components/DonutChart.vue';
+import StatCard from '@/components/StatCard.vue';
+import TaskBreakdown from '@/components/TaskBreakdown.vue';
+import WeeklyBarChart from '@/components/WeeklyBarChart.vue';
 
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 
-import StatCard from '@/components/StatCard.vue';
-import TaskBreakdown from '@/components/TaskBreakdown.vue';
-import DonutChart from '@/components/DonutChart.vue';
-import WeeklyBarChart from '@/components/WeeklyBarChart.vue';
+import { TaskService } from '@/services/TaskService';
+import { UserService } from '@/services/UserService';
 
 const activeTab = ref<'distribution' | 'weekly'>('distribution');
 

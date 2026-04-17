@@ -1,7 +1,11 @@
+// Por Diego Chourio
+
 <script setup lang="ts">
+// External imports
 import { computed } from 'vue';
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router';
 
+// Internal imports
 import { AuthService } from '@/services/AuthService';
 
 const route = useRoute();
