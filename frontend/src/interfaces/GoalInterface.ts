@@ -3,6 +3,5 @@ export interface GoalInterface {
   userId: string;
   taskId: string;
   targetHours: number;
-  currentHours: number;
-  period: string;
+  period: 'monthly';
 }
