@@ -1,4 +1,5 @@
 import { useGoalStore } from '@/stores/goalstore';
+import { TaskService } from '@/services/TaskService';
 
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
@@ -6,23 +7,17 @@ import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
 import { generateId } from '@/utils/generateId';
 
 export class GoalService {
-  static getGoals(): GoalInterface[] {
-    return useGoalStore().goals;
+  static getGoalsByUserId(userId: string): GoalInterface[] {
+    return useGoalStore().goals.filter((goal: GoalInterface) => goal.userId === userId);
   }
 
   static getGoalByTaskId(taskId: string): GoalInterface | undefined {
     return useGoalStore().goals.find((goal: GoalInterface) => goal.taskId === taskId);
   }
 
-  static createGoal(goal: CreateGoalDTO): void {
+  static createGoal(userId: string, goal: CreateGoalDTO): void {
     const id = generateId();
-    useGoalStore().goals.push({ id, ...goal });
-  }
-
-  static updateCurrentHours(taskId: string, hours: number): void {
-    const goal = GoalService.getGoalByTaskId(taskId);
-    if (!goal) return;
-    goal.currentHours = hours;
+    useGoalStore().goals.push({ id, userId, ...goal });
   }
 
   static deleteGoal(id: string): void {
@@ -30,9 +25,13 @@ export class GoalService {
     store.goals = store.goals.filter((goal: GoalInterface) => goal.id !== id);
   }
 
-  static checkProgress(taskId: string): number {
-    const goal = GoalService.getGoalByTaskId(taskId);
-    if (!goal || goal.targetHours === 0) return 0;
-    return Math.min((goal.currentHours / goal.targetHours) * 100, 100);
+  static getProgress(goal: GoalInterface): number {
+    const task = TaskService.getTaskById(goal.taskId);
+    if (!task || goal.targetHours === 0) return 0;
+    return Math.min((task.totalHours / goal.targetHours) * 100, 100);
+  }
+
+  static hasGoalForTask(taskId: string): boolean {
+    return useGoalStore().goals.some((goal: GoalInterface) => goal.taskId === taskId);
   }
 }
