@@ -13,7 +13,7 @@ const isAdmin = computed<boolean>(() => authenticatedUser.value?.role === 'admin
 
 function handleLogout(): void {
   AuthService.logout();
-  router.push({ name: 'login' });
+  router.push({ name: 'login' }).catch(() => {});
 }
 </script>
 
@@ -41,8 +41,17 @@ function handleLogout(): void {
               class="flex items-center px-4 py-3 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white"
               active-class="bg-gray-800 text-green-400"
             >
-              <i class="fas fa-clock mr-3"></i>
-              <span>Tracker</span>
+              <i class="fas fa-list-check mr-3"></i>
+              <span>Tasks</span>
+            </RouterLink>
+
+            <RouterLink
+              to="/goals"
+              class="flex items-center px-4 py-3 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white"
+              active-class="bg-gray-800 text-green-400"
+            >
+              <i class="fas fa-bullseye mr-3"></i>
+              <span>Goals</span>
             </RouterLink>
 
             <RouterLink
