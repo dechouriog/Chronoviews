@@ -1,5 +1,9 @@
+// Por Leidy Obando
+
+// External imports
 import { Body, Controller, Post } from '@nestjs/common';
 
+// Internal imports
 import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';

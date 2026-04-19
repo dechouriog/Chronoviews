@@ -1,5 +1,9 @@
-import { Column, Entity, ManyToOne, JoinColumn, RelationId, PrimaryGeneratedColumn } from 'typeorm';
+// Por Leidy Obando
 
+// External imports
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
+
+// Internal imports
 import { User } from '../../users/entities/user.entity.js';
 
 @Entity()

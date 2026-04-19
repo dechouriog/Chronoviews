@@ -1,5 +1,9 @@
+// Por Leidy Obando
+
+// External imports
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
+// Internal imports
 import { AddHoursDto } from './dto/add-hours.dto.js';
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { Task } from './entities/task.entity.js';

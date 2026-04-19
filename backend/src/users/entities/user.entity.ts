@@ -1,5 +1,9 @@
+// Por Leidy Obando
+
+// External imports
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
+// Internal imports
 import { Goal } from '../../goals/entities/goal.entity.js';
 import { Task } from '../../tasks/entities/task.entity.js';
 

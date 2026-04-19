@@ -1,7 +1,11 @@
+// Por Leidy Obando
+
+// External imports
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+// Internal imports
 import { CreateGoalDto } from './dto/create-goal.dto.js';
 import { Goal } from './entities/goal.entity.js';
 

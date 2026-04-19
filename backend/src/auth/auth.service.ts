@@ -1,5 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+// Por Leidy Obando
 
+// External imports
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+
+// Internal imports
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { User } from '../users/entities/user.entity.js';

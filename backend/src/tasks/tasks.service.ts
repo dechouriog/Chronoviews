@@ -1,7 +1,11 @@
+// Por Leidy Obando
+
+// External imports
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+// Internal imports
 import { AddHoursDto } from './dto/add-hours.dto.js';
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { Task } from './entities/task.entity.js';

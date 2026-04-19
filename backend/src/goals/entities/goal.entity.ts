@@ -1,5 +1,9 @@
+// Por Leidy Obando
+
+// External imports
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
 
+// Internal imports
 import { Task } from '../../tasks/entities/task.entity.js';
 import { User } from '../../users/entities/user.entity.js';
 

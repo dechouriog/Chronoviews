@@ -1,5 +1,9 @@
+// Por Leidy Obando
+
+// External imports
 import { Controller, Get, Param } from '@nestjs/common';
 
+// Internal imports
 import { User } from './entities/user.entity.js';
 import { UsersService } from './users.service.js';
 

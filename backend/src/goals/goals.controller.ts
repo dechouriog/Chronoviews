@@ -1,5 +1,9 @@
+// Por Leidy Obando
+
+// External imports
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 
+// Internal imports
 import { CreateGoalDto } from './dto/create-goal.dto.js';
 import { Goal } from './entities/goal.entity.js';
 import { GoalsService } from './goals.service.js';

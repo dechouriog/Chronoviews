@@ -1,6 +1,10 @@
+// Por Leidy Obando
+
+// External imports
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+// Internal imports
 import { AuthModule } from './auth/auth.module.js';
 import { GoalsModule } from './goals/goals.module.js';
 import { HomeModule } from './home/home.module.js';
