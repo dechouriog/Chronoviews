@@ -2,7 +2,7 @@
 <script setup lang="ts">
 
 // External imports
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // Internal imports
 import DonutChart from '@/components/DonutChart.vue';
@@ -17,8 +17,12 @@ import { UserService } from '@/services/UserService';
 
 const activeTab = ref<'distribution' | 'weekly'>('distribution');
 
-const userId = computed<string>(() => UserService.getUser()?.id ?? '');
-const tasks = computed<TaskInterface[]>(() => TaskService.getTasksByUserId(userId.value));
+const userId = UserService.getUser()?.id ?? '';
+const tasks = ref<TaskInterface[]>([]);
+
+onMounted(async () => {
+  tasks.value = await TaskService.getTasksByUserId(userId);
+});
 
 const totalHours = computed<number>(() => {
   return tasks.value.reduce((total: number, task: TaskInterface) => total + task.totalHours, 0);

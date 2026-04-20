@@ -2,7 +2,7 @@
 <script setup lang="ts">
 
 // External imports
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 // Internal imports
 import CategoryBarChart from '@/components/CategoryBarChart.vue';
@@ -10,11 +10,19 @@ import DonutChart from '@/components/DonutChart.vue';
 import StatCard from '@/components/StatCard.vue';
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 import type { UserInterface } from '@/interfaces/UserInterface';
-import { AuthService } from '@/services/AuthService';
-import { useTaskStore } from '@/stores/taskstore';
+import { UserService } from '@/services/UserService';
+import { TaskService } from '@/services/TaskService';
 
-const allTasks = computed<TaskInterface[]>(() => useTaskStore().tasks);
-const users = computed<UserInterface[]>(() => AuthService.getAllUsers());
+const users = ref<UserInterface[]>([]);
+const allTasks = ref<TaskInterface[]>([]);
+
+onMounted(async () => {
+  users.value = await UserService.getAllUsers();
+  const tasksByUser = await Promise.all(
+    users.value.map((user: UserInterface) => TaskService.getTasksByUserId(user.id)),
+  );
+  allTasks.value = tasksByUser.flat();
+});
 
 const totalHours = computed<number>(() => {
   return allTasks.value.reduce((total: number, task: TaskInterface) => total + task.totalHours, 0);

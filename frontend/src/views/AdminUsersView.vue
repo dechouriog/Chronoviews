@@ -2,22 +2,32 @@
 <script setup lang="ts">
 
 // External imports
-import { computed } from 'vue';
+import { onMounted, ref } from 'vue';
 
 // Internal imports
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 import type { UserInterface } from '@/interfaces/UserInterface';
-import { AuthService } from '@/services/AuthService';
-import { useTaskStore } from '@/stores/taskstore';
+import { UserService } from '@/services/UserService';
+import { TaskService } from '@/services/TaskService';
 
-const users = computed<UserInterface[]>(() => AuthService.getAllUsers());
+const users = ref<UserInterface[]>([]);
+const allTasks = ref<TaskInterface[]>([]);
+
+onMounted(async () => {
+  users.value = await UserService.getAllUsers();
+  // Cargar tareas de todos los usuarios
+  const tasksByUser = await Promise.all(
+    users.value.map((user: UserInterface) => TaskService.getTasksByUserId(user.id)),
+  );
+  allTasks.value = tasksByUser.flat();
+});
 
 function getTaskCountForUser(userId: string): number {
-  return useTaskStore().tasks.filter((task: TaskInterface) => task.userId === userId).length;
+  return allTasks.value.filter((task: TaskInterface) => task.userId === userId).length;
 }
 
 function getTotalHoursForUser(userId: string): number {
-  return useTaskStore().tasks
+  return allTasks.value
     .filter((task: TaskInterface) => task.userId === userId)
     .reduce((total: number, task: TaskInterface) => total + task.totalHours, 0);
 }
