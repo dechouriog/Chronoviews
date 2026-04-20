@@ -1,35 +1,26 @@
-//Diego Chourio
+// Por Diego Chourio
+
+// External imports
+import axios from 'axios';
 
 // Internal imports
-import type { CreateUserDTO } from '@/dtos/CreateUserDTO';
 import type { UserInterface } from '@/interfaces/UserInterface';
-import { AuthService } from '@/services/AuthService';
 import { useUserStore } from '@/stores/userstore';
-import { generateId } from '@/utils/generateId';
+
+const API_URL = 'http://localhost:3000/api/users';
 
 export class UserService {
   static getUser(): UserInterface | null {
     return useUserStore().user;
   }
 
-  static getAllUsers(): UserInterface[] {
-    return AuthService.getAllUsers();
+  static async getAllUsers(): Promise<UserInterface[]> {
+    const { data } = await axios.get<UserInterface[]>(API_URL);
+    return data;
   }
 
-  static setUser(user: CreateUserDTO): void {
-    const id = generateId();
-    useUserStore().user = { id, ...user };
-  }
-
-  static updateTotalTrackedTime(milliseconds: number): void {
-    const user = useUserStore().user;
-    if (!user) return;
-    user.totalTrackedTime = milliseconds;
-  }
-
-  static updateTasksCount(count: number): void {
-    const user = useUserStore().user;
-    if (!user) return;
-    user.tasksCount = count;
+  static async getUserById(id: string): Promise<UserInterface | null> {
+    const { data } = await axios.get<UserInterface>(`${API_URL}/${id}`);
+    return data;
   }
 }

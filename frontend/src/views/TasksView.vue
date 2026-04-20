@@ -2,18 +2,22 @@
 
 <script setup lang="ts">
 // External imports
-import { computed, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 // Internal imports
 import StatCard from '@/components/StatCard.vue';
 import TaskCard from '@/components/TaskCard.vue';
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 import { TaskService } from '@/services/TaskService';
-import { UserService } from '@/services/UserService'
+import { UserService } from '@/services/UserService';
 
-const userId = computed<string>(() => UserService.getUser()?.id ?? '');
-const tasks = computed<TaskInterface[]>(() => TaskService.getTasksByUserId(userId.value));
+const userId = UserService.getUser()?.id ?? '';
+const tasks = ref<TaskInterface[]>([]);
 const taskToDelete = ref<string | null>(null);
+
+onMounted(async () => {
+  tasks.value = await TaskService.getTasksByUserId(userId);
+});
 
 const totalHours = computed<number>(() => {
   return tasks.value.reduce((total: number, task: TaskInterface) => total + task.totalHours, 0);
@@ -37,18 +41,20 @@ function formatHours(hours: number): string {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function handleAddHours(id: string, hours: number): void {
-  TaskService.addHours(id, hours);
+async function handleAddHours(id: string, hours: number): Promise<void> {
+  await TaskService.addHours(id, hours);
+  tasks.value = await TaskService.getTasksByUserId(userId);
 }
 
 function confirmDelete(id: string): void {
   taskToDelete.value = id;
 }
 
-function handleDelete(): void {
+async function handleDelete(): Promise<void> {
   if (!taskToDelete.value) return;
-  TaskService.deleteTask(taskToDelete.value);
+  await TaskService.deleteTask(taskToDelete.value);
   taskToDelete.value = null;
+  tasks.value = await TaskService.getTasksByUserId(userId);
 }
 
 function cancelDelete(): void {

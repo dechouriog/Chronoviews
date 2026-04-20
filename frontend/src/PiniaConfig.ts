@@ -1,14 +1,12 @@
-import { createPinia } from 'pinia';
-import { watch } from 'vue';
+// Por Diego Chourio
 
-import { taskSeeder } from '@/stores/taskseeder';
-import { goalSeeder } from '@/stores/goalseeder';
+import { createPinia } from 'pinia';
 
 export default class PiniaConfig {
   public static init() {
     const pinia = createPinia();
 
-    const savedState = localStorage.getItem('piniaState');
+    /*const savedState = localStorage.getItem('piniaState');
     if (savedState) {
       const parsed = JSON.parse(savedState);
       if (!parsed.auth) {
@@ -35,7 +33,7 @@ export default class PiniaConfig {
         localStorage.setItem('piniaState', JSON.stringify(state));
       },
       { deep: true },
-    );
+    );*/
 
     return pinia;
   }

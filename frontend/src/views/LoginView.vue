@@ -15,11 +15,11 @@ const password = ref<string>('');
 const errorMessage = ref<string>('');
 const isLoading = ref<boolean>(false);
 
-function handleLogin(): void {
+async function handleLogin(): Promise<void> {
   errorMessage.value = '';
   isLoading.value = true;
 
-  const success = AuthService.login(email.value, password.value);
+  const success = await AuthService.login(email.value, password.value);
 
   isLoading.value = false;
 
@@ -103,21 +103,6 @@ function handleLogin(): void {
           </button>
 
         </form>
-
-        <!-- mock credentials hint -->
-        <div class="mt-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
-          <p class="text-gray-400 text-xs font-medium mb-2">
-            <i class="fas fa-circle-info mr-1"></i> Mock credentials
-          </p>
-          <div class="space-y-1">
-            <p class="text-gray-500 text-xs">
-              <span class="text-gray-300">Admin:</span> admin@example.com / admin123
-            </p>
-            <p class="text-gray-500 text-xs">
-              <span class="text-gray-300">User:</span> user@example.com / user123
-            </p>
-          </div>
-        </div>
 
         <!-- link to register -->
         <p class="text-center text-gray-500 text-sm mt-6">

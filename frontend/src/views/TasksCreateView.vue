@@ -7,7 +7,6 @@ import { useRouter } from 'vue-router';
 
 // Internal imports
 import type { CreateTaskDTO } from '@/dtos/CreateTaskDTO';
-
 import { TaskService } from '@/services/TaskService';
 import { UserService } from '@/services/UserService';
 
@@ -34,7 +33,7 @@ function selectColor(preset: string): void {
   color.value = preset;
 }
 
-function handleSubmit(): void {
+async function handleSubmit(): Promise<void> {
   const userId = UserService.getUser()?.id ?? '';
   if (!userId) return;
 
@@ -45,8 +44,12 @@ function handleSubmit(): void {
     totalHours: 0,
   };
 
-  TaskService.createTask(userId, newTask);
-  router.push({ name: 'tasks' }).catch(() => {});
+  try {
+    await TaskService.createTask(userId, newTask);
+    router.push({ name: 'tasks' }).catch(() => {});
+  } catch (error) {
+    console.error(error);
+  }
 }
 </script>
 

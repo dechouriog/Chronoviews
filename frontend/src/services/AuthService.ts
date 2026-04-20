@@ -1,49 +1,33 @@
 // Por Diego Chourio
 
+// External imports
+import axios from 'axios';
+
 // Internal imports
 import type { UserInterface } from '@/interfaces/UserInterface';
-import { authSeeder } from '@/stores/authseeder';
-import { useAuthStore } from '@/stores/authstore';
 import { useUserStore } from '@/stores/userstore';
-import { generateId } from '@/utils/generateId';
 
+const API_URL = 'http://localhost:3000/api';
 
 export class AuthService {
-  static getAllUsers(): UserInterface[] {
-    return [...authSeeder, ...useAuthStore().registeredUsers];
+  static async login(email: string, password: string): Promise<boolean> {
+    try {
+      const { data } = await axios.post<UserInterface>(`${API_URL}/auth/login`, { email, password });
+      useUserStore().user = data;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
-  static login(email: string, password: string): boolean {
-    const match = AuthService.getAllUsers().find(
-      (user: UserInterface) => user.email === email && user.password === password,
-    );
-
-    if (!match) return false;
-
-    useUserStore().user = match;
-    return true;
-  }
-
-  static register(name: string, email: string, password: string): boolean {
-    const exists = AuthService.getAllUsers().some(
-      (user: UserInterface) => user.email === email,
-    );
-
-    if (exists) return false;
-
-    const newUser: UserInterface = {
-      id: generateId(),
-      name: name.trim(),
-      email: email.trim(),
-      password,
-      role: 'user',
-      totalTrackedTime: 0,
-      tasksCount: 0,
-    };
-
-    useAuthStore().registeredUsers.push(newUser);
-    useUserStore().user = newUser;
-    return true;
+  static async register(name: string, email: string, password: string): Promise<boolean> {
+    try {
+      const { data } = await axios.post<UserInterface>(`${API_URL}/auth/register`, { name, email, password });
+      useUserStore().user = data;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   static logout(): void {

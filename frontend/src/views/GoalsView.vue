@@ -2,7 +2,7 @@
 <script setup lang="ts">
 
 // External imports
-import { computed, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 // Internal imports
 import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
@@ -12,12 +12,19 @@ import { GoalService } from '@/services/GoalService';
 import { TaskService } from '@/services/TaskService';
 import { UserService } from '@/services/UserService';
 
-const userId = computed<string>(() => UserService.getUser()?.id ?? '');
-const goals = computed<GoalInterface[]>(() => GoalService.getGoalsByUserId(userId.value));
-const tasks = computed<TaskInterface[]>(() => TaskService.getTasksByUserId(userId.value));
+const userId = UserService.getUser()?.id ?? '';
+const goals = ref<GoalInterface[]>([]);
+const tasks = ref<TaskInterface[]>([]);
+
+onMounted(async () => {
+  tasks.value = await TaskService.getTasksByUserId(userId);
+  goals.value = await GoalService.getGoalsByUserId(userId);
+});
 
 const tasksWithoutGoal = computed<TaskInterface[]>(() => {
-  return tasks.value.filter((task: TaskInterface) => !GoalService.hasGoalForTask(task.id));
+  return tasks.value.filter(
+    (task: TaskInterface) => !goals.value.some((g) => g.taskId === task.id),
+  );
 });
 
 const showForm = ref<boolean>(false);
@@ -30,7 +37,9 @@ function getTaskForGoal(taskId: string): TaskInterface | undefined {
 }
 
 function getProgress(goal: GoalInterface): number {
-  return GoalService.getProgress(goal);
+  const task = getTaskForGoal(goal.taskId);
+  if (!task || goal.targetHours === 0) return 0;
+  return Math.min((task.totalHours / goal.targetHours) * 100, 100);
 }
 
 function getCurrentHours(goal: GoalInterface): number {
@@ -41,7 +50,7 @@ function formatHours(hours: number): string {
   return `${hours.toFixed(1)}h`;
 }
 
-function handleCreateGoal(): void {
+async function handleCreateGoal(): Promise<void> {
   if (!selectedTaskId.value || targetHours.value <= 0) return;
 
   const newGoal: CreateGoalDTO = {
@@ -50,20 +59,26 @@ function handleCreateGoal(): void {
     period: 'monthly',
   };
 
-  GoalService.createGoal(userId.value, newGoal);
-  selectedTaskId.value = '';
-  targetHours.value = 0;
-  showForm.value = false;
+  try {
+    await GoalService.createGoal(userId, newGoal);
+    goals.value = await GoalService.getGoalsByUserId(userId);
+    selectedTaskId.value = '';
+    targetHours.value = 0;
+    showForm.value = false;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function confirmDelete(id: string): void {
   goalToDelete.value = id;
 }
 
-function handleDelete(): void {
+async function handleDelete(): Promise<void> {
   if (!goalToDelete.value) return;
-  GoalService.deleteGoal(goalToDelete.value);
+  await GoalService.deleteGoal(goalToDelete.value);
   goalToDelete.value = null;
+  goals.value = await GoalService.getGoalsByUserId(userId);
 }
 
 function cancelDelete(): void {

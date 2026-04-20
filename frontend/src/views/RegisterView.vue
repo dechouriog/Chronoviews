@@ -17,7 +17,7 @@ const confirmPassword = ref<string>('');
 const errorMessage = ref<string>('');
 const isLoading = ref<boolean>(false);
 
-function handleRegister(): void {
+async function handleRegister(): Promise<void> {
   errorMessage.value = '';
 
   if (password.value !== confirmPassword.value) {
@@ -32,7 +32,7 @@ function handleRegister(): void {
 
   isLoading.value = true;
 
-  const success = AuthService.register(name.value, email.value, password.value);
+  const success = await AuthService.register(name.value, email.value, password.value);
 
   isLoading.value = false;
 

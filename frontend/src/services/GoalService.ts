@@ -1,38 +1,38 @@
-//Diego Chourio
+// Por Diego Chourio
+
+// External imports
+import axios from 'axios';
 
 // Internal imports
 import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 import { TaskService } from '@/services/TaskService';
-import { useGoalStore } from '@/stores/goalstore';
-import { generateId } from '@/utils/generateId';
+
+const API_URL = 'http://localhost:3000/api/goals';
 
 export class GoalService {
-  static getGoalsByUserId(userId: string): GoalInterface[] {
-    return useGoalStore().goals.filter((goal: GoalInterface) => goal.userId === userId);
+  static async getGoalsByUserId(userId: string): Promise<GoalInterface[]> {
+    const { data } = await axios.get<GoalInterface[]>(`${API_URL}/user/${userId}`);
+    return data;
   }
 
-  static getGoalByTaskId(taskId: string): GoalInterface | undefined {
-    return useGoalStore().goals.find((goal: GoalInterface) => goal.taskId === taskId);
+  static async createGoal(userId: string, goal: CreateGoalDTO): Promise<GoalInterface> {
+    const { data } = await axios.post<GoalInterface>(API_URL, { userId, ...goal });
+    return data;
   }
 
-  static createGoal(userId: string, goal: CreateGoalDTO): void {
-    const id = generateId();
-    useGoalStore().goals.push({ id, userId, ...goal });
+  static async deleteGoal(id: string): Promise<void> {
+    await axios.delete(`${API_URL}/${id}`);
   }
 
-  static deleteGoal(id: string): void {
-    const store = useGoalStore();
-    store.goals = store.goals.filter((goal: GoalInterface) => goal.id !== id);
-  }
-
-  static getProgress(goal: GoalInterface): number {
-    const task = TaskService.getTaskById(goal.taskId);
+  static async getProgress(goal: GoalInterface): Promise<number> {
+    const task = await TaskService.getTaskById(goal.taskId);
     if (!task || goal.targetHours === 0) return 0;
     return Math.min((task.totalHours / goal.targetHours) * 100, 100);
   }
 
-  static hasGoalForTask(taskId: string): boolean {
-    return useGoalStore().goals.some((goal: GoalInterface) => goal.taskId === taskId);
+  static async hasGoalForTask(taskId: string, userId: string): Promise<boolean> {
+    const goals = await GoalService.getGoalsByUserId(userId);
+    return goals.some((goal: GoalInterface) => goal.taskId === taskId);
   }
 }

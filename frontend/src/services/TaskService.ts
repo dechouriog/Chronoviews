@@ -1,39 +1,41 @@
-//Por Diego Chourio
+// Por Diego Chourio
+
+// External imports
+import axios from 'axios';
 
 // Internal imports
 import type { CreateTaskDTO } from '@/dtos/CreateTaskDTO';
 import type { TaskInterface } from '@/interfaces/TaskInterface';
-import { useTaskStore } from '@/stores/taskstore';
-import { generateId } from '@/utils/generateId';
+
+const API_URL = 'http://localhost:3000/api/tasks';
 
 export class TaskService {
-  static getTasksByUserId(userId: string): TaskInterface[] {
-    return useTaskStore().tasks.filter((task: TaskInterface) => task.userId === userId);
+  static async getTasksByUserId(userId: string): Promise<TaskInterface[]> {
+    const { data } = await axios.get<TaskInterface[]>(`${API_URL}/user/${userId}`);
+    return data;
   }
 
-  static getTaskById(id: string): TaskInterface | undefined {
-    return useTaskStore().tasks.find((task: TaskInterface) => task.id === id);
+  static async getTaskById(id: string): Promise<TaskInterface | null> {
+    const { data } = await axios.get<TaskInterface>(`${API_URL}/${id}`);
+    return data;
   }
 
-  static createTask(userId: string, task: CreateTaskDTO): void {
-    const id = generateId();
-    useTaskStore().tasks.push({ id, userId, ...task });
+  static async createTask(userId: string, task: CreateTaskDTO): Promise<TaskInterface> {
+    const { data } = await axios.post<TaskInterface>(API_URL, { userId, ...task });
+    return data;
   }
 
-  static addHours(id: string, hours: number): void {
-    const task = TaskService.getTaskById(id);
-    if (!task || hours <= 0) return;
-    task.totalHours += hours;
+  static async addHours(id: string, hours: number): Promise<TaskInterface> {
+    const { data } = await axios.patch<TaskInterface>(`${API_URL}/${id}/hours`, { hours });
+    return data;
   }
 
-  static deleteTask(id: string): void {
-    const store = useTaskStore();
-    store.tasks = store.tasks.filter((task: TaskInterface) => task.id !== id);
+  static async deleteTask(id: string): Promise<void> {
+    await axios.delete(`${API_URL}/${id}`);
   }
 
-  static getUniqueCategoriesByUserId(userId: string): string[] {
-    return Array.from(
-      new Set(TaskService.getTasksByUserId(userId).map((task: TaskInterface) => task.category)),
-    );
+  static async getUniqueCategoriesByUserId(userId: string): Promise<string[]> {
+    const tasks = await TaskService.getTasksByUserId(userId);
+    return Array.from(new Set(tasks.map((task: TaskInterface) => task.category)));
   }
 }
