@@ -8,7 +8,7 @@ import type { CreateGoalDTO } from '@/dtos/CreateGoalDTO';
 import type { GoalInterface } from '@/interfaces/GoalInterface';
 import { TaskService } from '@/services/TaskService';
 
-const API_URL = 'http://localhost:3000/api/goals';
+const API_URL = 'http://136.115.251.199:3000/api';
 
 export class GoalService {
   static async getGoalsByUserId(userId: string): Promise<GoalInterface[]> {

@@ -7,7 +7,7 @@ import axios from 'axios';
 import type { UserInterface } from '@/interfaces/UserInterface';
 import { useUserStore } from '@/stores/userstore';
 
-const API_URL = 'http://localhost:3000/api/users';
+const API_URL = 'http://136.115.251.199:3000/api';
 
 export class UserService {
   static getUser(): UserInterface | null {

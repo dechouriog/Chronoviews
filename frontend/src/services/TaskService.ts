@@ -7,7 +7,7 @@ import axios from 'axios';
 import type { CreateTaskDTO } from '@/dtos/CreateTaskDTO';
 import type { TaskInterface } from '@/interfaces/TaskInterface';
 
-const API_URL = 'http://localhost:3000/api/tasks';
+const API_URL = 'http://136.115.251.199:3000/api';
 
 export class TaskService {
   static async getTasksByUserId(userId: string): Promise<TaskInterface[]> {
