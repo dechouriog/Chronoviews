@@ -1,13 +1,17 @@
 // Por Leidy Obando
 
 // External imports
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 
 // Internal imports
-import { LoginDto } from './dto/login.dto.js';
-import { RegisterDto } from './dto/register.dto.js';
-import { User } from '../users/entities/user.entity.js';
-import { UsersService } from '../users/users.service.js';
+import { LoginDto } from "./dto/login.dto.js";
+import { RegisterDto } from "./dto/register.dto.js";
+import { User } from "../users/entities/user.entity.js";
+import { UsersService } from "../users/users.service.js";
 
 @Injectable()
 export class AuthService {
@@ -17,7 +21,7 @@ export class AuthService {
     const user = await this.usersService.findByEmail(loginDto.email);
 
     if (!user || user.password !== loginDto.password) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException("Invalid email or password");
     }
 
     return user;
@@ -27,14 +31,14 @@ export class AuthService {
     const existing = await this.usersService.findByEmail(registerDto.email);
 
     if (existing) {
-      throw new ConflictException('An account with this email already exists');
+      throw new ConflictException("An account with this email already exists");
     }
 
     return this.usersService.create({
       name: registerDto.name,
       email: registerDto.email,
       password: registerDto.password,
-      role: 'user',
+      role: "user",
     });
   }
 }

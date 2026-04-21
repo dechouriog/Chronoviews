@@ -20,20 +20,20 @@ let AuthService = class AuthService {
     async login(loginDto) {
         const user = await this.usersService.findByEmail(loginDto.email);
         if (!user || user.password !== loginDto.password) {
-            throw new common_1.UnauthorizedException('Invalid email or password');
+            throw new common_1.UnauthorizedException("Invalid email or password");
         }
         return user;
     }
     async register(registerDto) {
         const existing = await this.usersService.findByEmail(registerDto.email);
         if (existing) {
-            throw new common_1.ConflictException('An account with this email already exists');
+            throw new common_1.ConflictException("An account with this email already exists");
         }
         return this.usersService.create({
             name: registerDto.name,
             email: registerDto.email,
             password: registerDto.password,
-            role: 'user',
+            role: "user",
         });
     }
 };
