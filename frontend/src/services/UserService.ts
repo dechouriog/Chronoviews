@@ -7,7 +7,7 @@ import axios from 'axios';
 import type { UserInterface } from '@/interfaces/UserInterface';
 import { useUserStore } from '@/stores/userstore';
 
-const API_URL = 'http://136.115.251.199:3000/api';
+const API_URL = import.meta.env.VITE_API_URL as string;
 
 export class UserService {
   static getUser(): UserInterface | null {
@@ -15,12 +15,12 @@ export class UserService {
   }
 
   static async getAllUsers(): Promise<UserInterface[]> {
-    const { data } = await axios.get<UserInterface[]>(API_URL);
+    const { data } = await axios.get<UserInterface[]>(`${API_URL}/users`);
     return data;
   }
 
   static async getUserById(id: string): Promise<UserInterface | null> {
-    const { data } = await axios.get<UserInterface>(`${API_URL}/${id}`);
+    const { data } = await axios.get<UserInterface>(`${API_URL}/users/${id}`);
     return data;
   }
 }

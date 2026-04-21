@@ -1,29 +1,33 @@
 // Por Leidy Obando
 
 // External imports
-import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 // Internal imports
-import { AppModule } from './app.module.js';
+import { AppModule } from "./app.module.js";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://localhost:3001",
+    ],
   });
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix("api");
 
   const config = new DocumentBuilder()
-    .setTitle('Chronoviews API')
-    .setDescription('API para gestión de tareas, metas y usuarios')
-    .setVersion('1.0')
+    .setTitle("Chronoviews API")
+    .setDescription("API para gestión de tareas, metas y usuarios")
+    .setVersion("1.0")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup("docs", app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }

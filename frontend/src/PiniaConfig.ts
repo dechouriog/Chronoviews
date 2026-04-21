@@ -1,39 +1,30 @@
 // Por Diego Chourio
 
+// External imports
 import { createPinia } from 'pinia';
+import { watch } from 'vue';
 
 export default class PiniaConfig {
   public static init() {
     const pinia = createPinia();
 
-    /*const savedState = localStorage.getItem('piniaState');
-    if (savedState) {
-      const parsed = JSON.parse(savedState);
-      if (!parsed.auth) {
-        parsed.auth = { registeredUsers: [] };
-      }
-      if (!parsed.goal) {
-        parsed.goal = { goals: goalSeeder };
-      }
-      pinia.state.value = parsed;
-    } else {
-      pinia.state.value = {
-        task: { tasks: taskSeeder },
-        goal: { goals: goalSeeder },
-        user: { user: null },
-        auth: { registeredUsers: [] },
-      };
+    const savedUser = localStorage.getItem('currentUser');
 
-      localStorage.setItem('piniaState', JSON.stringify(pinia.state.value));
-    }
+    pinia.state.value = {
+      user: { user: savedUser ? JSON.parse(savedUser) : null },
+    };
 
     watch(
-      pinia.state,
-      (state) => {
-        localStorage.setItem('piniaState', JSON.stringify(state));
+      () => pinia.state.value.user,
+      (userState) => {
+        if (userState?.user) {
+          localStorage.setItem('currentUser', JSON.stringify(userState.user));
+        } else {
+          localStorage.removeItem('currentUser');
+        }
       },
       { deep: true },
-    );*/
+    );
 
     return pinia;
   }

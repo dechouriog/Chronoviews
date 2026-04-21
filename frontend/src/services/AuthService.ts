@@ -7,12 +7,15 @@ import axios from 'axios';
 import type { UserInterface } from '@/interfaces/UserInterface';
 import { useUserStore } from '@/stores/userstore';
 
-const API_URL = 'http://136.115.251.199:3000/api';
+const API_URL = import.meta.env.VITE_API_URL as string;
 
 export class AuthService {
   static async login(email: string, password: string): Promise<boolean> {
     try {
-      const { data } = await axios.post<UserInterface>(`${API_URL}/auth/login`, { email, password });
+      const { data } = await axios.post<UserInterface>(`${API_URL}/auth/login`, {
+        email,
+        password,
+      });
       useUserStore().user = data;
       return true;
     } catch {
@@ -22,7 +25,11 @@ export class AuthService {
 
   static async register(name: string, email: string, password: string): Promise<boolean> {
     try {
-      const { data } = await axios.post<UserInterface>(`${API_URL}/auth/register`, { name, email, password });
+      const { data } = await axios.post<UserInterface>(`${API_URL}/auth/register`, {
+        name,
+        email,
+        password,
+      });
       useUserStore().user = data;
       return true;
     } catch {

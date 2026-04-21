@@ -6,16 +6,20 @@ const app_module_js_1 = require("./app.module.js");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_js_1.AppModule);
     app.enableCors({
-        origin: 'http://localhost:5173',
+        origin: [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3001",
+        ],
     });
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix("api");
     const config = new swagger_1.DocumentBuilder()
-        .setTitle('Chronoviews API')
-        .setDescription('API para gestión de tareas, metas y usuarios')
-        .setVersion('1.0')
+        .setTitle("Chronoviews API")
+        .setDescription("API para gestión de tareas, metas y usuarios")
+        .setVersion("1.0")
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
-    swagger_1.SwaggerModule.setup('docs', app, document);
+    swagger_1.SwaggerModule.setup("docs", app, document);
     await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();
