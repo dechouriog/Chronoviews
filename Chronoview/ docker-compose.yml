@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: nest-backend
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      SQLITE_PATH: /data/database.sqlite
+      CORS_ORIGIN: "http://136.115.251.199,http://localhost,http://127.0.0.1,http://localhost:5173"
+    volumes:
+      - backend-data:/data
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: vue-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  backend-data:
