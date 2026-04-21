@@ -12,9 +12,13 @@ async function bootstrap() {
             "http://136.115.251.199",
             "http://136.115.251.199:80",
         ],
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true,
     });
     app.setGlobalPrefix("api");
-    await app.listen(process.env.PORT ?? 3000);
+    const port = process.env.PORT ?? 3000;
+    await app.listen(port, "0.0.0.0");
+    console.log(`🚀 Server running on http://136.115.251.199:${port}/api`);
 }
 void bootstrap();
 //# sourceMappingURL=main.js.map
