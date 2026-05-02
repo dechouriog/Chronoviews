@@ -1,3 +1,6 @@
+// Por Diego Chourio
+
+// Internal imports
 import { tasks } from '../../data/tasks'
 
 export default defineEventHandler((event) => {
