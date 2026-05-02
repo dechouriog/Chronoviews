@@ -1,4 +1,6 @@
+// Por Leidy Obando
 <script setup lang="ts">
+
 type Task = {
   id: string
   name: string

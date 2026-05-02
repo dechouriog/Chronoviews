@@ -1,4 +1,7 @@
+// Por Leidy Obando
 <script setup lang="ts">
+
+// Internal imports
 import { articles } from '~/data/articles'
 </script>
 

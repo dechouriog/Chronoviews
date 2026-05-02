@@ -1,4 +1,7 @@
+// Por Diego Chourio
 <script setup lang="ts">
+
+// Internal imports
 import { articles } from '~/data/articles'
 
 definePageMeta({

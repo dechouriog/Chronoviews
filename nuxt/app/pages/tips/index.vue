@@ -1,3 +1,6 @@
+// Por Leidy Obando
+<script setup lang="ts"></script>
+
 <template>
   <div>
     <h1 class="h2 mb-1">Tips</h1>

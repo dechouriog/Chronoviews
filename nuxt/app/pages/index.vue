@@ -1,3 +1,6 @@
+// Por Diego Chourio
+<script setup lang="ts"></script>
+
 <template>
   <div>
     <h1 class="h2 mb-2">Welcome to CronoView</h1>
