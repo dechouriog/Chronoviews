@@ -2,6 +2,7 @@
 
 // External imports
 import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteLocationNormalized } from 'vue-router';
 
 // Internal imports
 import AdminUsersView from '@/views/AdminUsersView.vue';
@@ -32,7 +33,7 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
+router.beforeEach((to: RouteLocationNormalized) => {
   const isAuthenticated = !!localStorage.getItem('currentUser');
   const isPublicRoute = PUBLIC_ROUTES.includes(to.name as string);
 
