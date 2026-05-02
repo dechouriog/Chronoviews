@@ -14,6 +14,8 @@ import StatisticsView from '@/views/StatisticsView.vue';
 import TasksCreateView from '@/views/TasksCreateView.vue';
 import TasksView from '@/views/TasksView.vue';
 
+const PUBLIC_ROUTES = ['login', 'register'];
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -28,6 +30,19 @@ const router = createRouter({
     { path: '/admin', name: 'admin', component: AdminView, meta: { title: 'Admin' } },
     { path: '/admin/users', name: 'admin.users', component: AdminUsersView, meta: { title: 'Admin — Users' } },
   ],
+});
+
+router.beforeEach((to) => {
+  const isAuthenticated = !!localStorage.getItem('currentUser');
+  const isPublicRoute = PUBLIC_ROUTES.includes(to.name as string);
+
+  if (!isAuthenticated && !isPublicRoute) {
+    return { name: 'login' };
+  }
+
+  if (isAuthenticated && isPublicRoute) {
+    return { name: 'tasks' };
+  }
 });
 
 export default router;
