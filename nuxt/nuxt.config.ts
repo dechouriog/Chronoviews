@@ -1,13 +1,17 @@
+// Por Diego Chourio
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+// Internal imports
 import { articles } from './app/data/articles'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   routeRules: {
+    '/': { ssr: true },
     '/blog/**': { prerender: true },
     '/tasks/**': { ssr: true },
-    '/': { ssr: true },
     '/tips/**': { ssr: false },
   },
   nitro: {
