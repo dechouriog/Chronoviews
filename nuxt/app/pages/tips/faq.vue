@@ -1,4 +1,6 @@
+// Por Leidy Obando
 <script setup lang="ts">
+
 const faqs = [
   {
     id: 1,
@@ -57,7 +59,7 @@ const faqs = [
           </button>
         </h2>
         <div
-          :id="`#faq-${faq.id}`"
+          :id="`faq-${faq.id}`"
           class="accordion-collapse collapse"
           data-bs-parent="#faqAccordion"
         >
